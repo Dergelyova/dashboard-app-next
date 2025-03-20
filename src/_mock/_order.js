@@ -3,10 +3,8 @@ import { _mock } from './_mock';
 // ----------------------------------------------------------------------
 
 export const ORDER_STATUS_OPTIONS = [
-  { value: 'pending', label: 'Pending' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'cancelled', label: 'Cancelled' },
-  { value: 'refunded', label: 'Refunded' },
+  { value: 'pending', label: 'В процесі' },
+  { value: 'completed', label: 'Завершені' },
 ];
 
 const ITEMS = Array.from({ length: 3 }, (_, index) => ({

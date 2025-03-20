@@ -9,7 +9,7 @@ import Avatar from '@mui/material/Avatar';
 import MenuList from '@mui/material/MenuList';
 import Collapse from '@mui/material/Collapse';
 import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
+import { TableRow } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
@@ -24,17 +24,32 @@ import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover } from 'src/components/custom-popover';
+import { Order } from 'src/data/types';
+import { CONFIG } from 'src/global-config';
 
-// ----------------------------------------------------------------------
+// -------------------------------------------------------
+// ---------------
+interface OrderTableRowProps {
+  row: Order;
+  selected: boolean;
+  // onSelectRow: VoidFunction;
+  onDeleteRow: VoidFunction;
+  detailsHref: string;
+}
+export function OrderTableRow({
+  row,
+  selected,
 
-export function OrderTableRow({ row, selected, onSelectRow, onDeleteRow, detailsHref }) {
+  onDeleteRow,
+  detailsHref,
+}: OrderTableRowProps) {
   const confirmDialog = useBoolean();
   const menuActions = usePopover();
   const collapseRow = useBoolean();
 
   const renderPrimaryRow = () => (
     <TableRow hover selected={selected}>
-      <TableCell padding="checkbox">
+      {/* <TableCell padding="checkbox">
         <Checkbox
           checked={selected}
           onClick={onSelectRow}
@@ -43,23 +58,23 @@ export function OrderTableRow({ row, selected, onSelectRow, onDeleteRow, details
             'aria-label': `${row.id} checkbox`,
           }}
         />
-      </TableCell>
+      </TableCell> */}
 
       <TableCell>
         <Link component={RouterLink} href={detailsHref} color="inherit" underline="always">
-          {row.orderNumber}
+          #{row.id}
         </Link>
       </TableCell>
 
       <TableCell>
         <Box sx={{ gap: 2, display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={row.customer.name} src={row.customer.avatarUrl} />
+          {/* <Avatar alt={row.client_name} src={row.customer.avatarUrl} /> */}
 
           <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
-            <Box component="span">{row.customer.name}</Box>
+            <Box component="span">{row.client_name}</Box>
 
             <Box component="span" sx={{ color: 'text.disabled' }}>
-              {row.customer.email}
+              {row.client_contact_number}
             </Box>
           </Stack>
         </Box>
@@ -67,8 +82,8 @@ export function OrderTableRow({ row, selected, onSelectRow, onDeleteRow, details
 
       <TableCell>
         <ListItemText
-          primary={fDate(row.createdAt)}
-          secondary={fTime(row.createdAt)}
+          primary={fDate(row.date_of_order)}
+          secondary={fTime(row.date_of_order)}
           slotProps={{
             primary: {
               noWrap: true,
@@ -81,12 +96,12 @@ export function OrderTableRow({ row, selected, onSelectRow, onDeleteRow, details
         />
       </TableCell>
 
-      <TableCell align="center"> {row.totalQuantity} </TableCell>
+      <TableCell align="center"> {row.order_items.length} </TableCell>
 
-      <TableCell> {fCurrency(row.subtotal)} </TableCell>
+      {/* <TableCell> {fCurrency(row.subtotal)} </TableCell> */}
 
       <TableCell>
-        <Label
+        {/* <Label
           variant="soft"
           color={
             (row.status === 'completed' && 'success') ||
@@ -96,6 +111,9 @@ export function OrderTableRow({ row, selected, onSelectRow, onDeleteRow, details
           }
         >
           {row.status}
+        </Label> */}
+        <Label variant="soft" color={'warning'}>
+          {'в процесі'}
         </Label>
       </TableCell>
 
@@ -125,12 +143,13 @@ export function OrderTableRow({ row, selected, onSelectRow, onDeleteRow, details
           sx={{ bgcolor: 'background.neutral' }}
         >
           <Paper sx={{ m: 1.5 }}>
-            {row.items.map((item) => (
+            {row.order_items.map((item) => (
               <Box
                 key={item.id}
                 sx={(theme) => ({
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'space-between',
                   p: theme.spacing(1.5, 2, 1.5, 1.5),
                   '&:not(:last-of-type)': {
                     borderBottom: `solid 2px ${theme.vars.palette.background.neutral}`,
@@ -138,14 +157,15 @@ export function OrderTableRow({ row, selected, onSelectRow, onDeleteRow, details
                 })}
               >
                 <Avatar
-                  src={item.coverUrl}
+                  // src={item.coverUrl}
+                  src={`/assets/images/mock/m-product/product-2.webp`}
                   variant="rounded"
                   sx={{ width: 48, height: 48, mr: 2 }}
                 />
 
                 <ListItemText
-                  primary={item.name}
-                  secondary={item.sku}
+                  primary={item.item_name}
+                  secondary={item.item_model}
                   slotProps={{
                     primary: {
                       sx: { typography: 'body2' },
@@ -155,10 +175,38 @@ export function OrderTableRow({ row, selected, onSelectRow, onDeleteRow, details
                     },
                   }}
                 />
+                <ListItemText
+                  primary={item.item_manufacture}
+                  secondary={'Виробництво'}
+                  slotProps={{
+                    primary: {
+                      sx: { typography: 'body2' },
+                    },
+                    secondary: {
+                      sx: { color: 'text.disabled' },
+                    },
+                  }}
+                />
+                <Stack direction={'row'} spacing={2}>
+                  {item.item_colors.map((color) => (
+                    <ListItemText
+                      primary={color.color}
+                      secondary={`Ж.${color.amount_woman}| Ч.${color.amount_man}| Д.${color.amount_kids}`}
+                      slotProps={{
+                        primary: {
+                          sx: { typography: 'body2' },
+                        },
+                        secondary: {
+                          sx: { mt: 0.5, color: 'text.disabled' },
+                        },
+                      }}
+                    />
+                  ))}
+                </Stack>
 
-                <div>x{item.quantity} </div>
+                <div>x{item.item_total_amount} </div>
 
-                <Box sx={{ width: 110, textAlign: 'right' }}>{fCurrency(item.price)}</Box>
+                {/* <Box sx={{ width: 110, textAlign: 'right' }}>{fCurrency(item.price)}</Box> */}
               </Box>
             ))}
           </Paper>
@@ -183,13 +231,13 @@ export function OrderTableRow({ row, selected, onSelectRow, onDeleteRow, details
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          Видалити
         </MenuItem>
 
         <li>
           <MenuItem component={RouterLink} href={detailsHref} onClick={() => menuActions.onClose()}>
             <Iconify icon="solar:eye-bold" />
-            View
+            Перегляд
           </MenuItem>
         </li>
       </MenuList>
@@ -200,11 +248,11 @@ export function OrderTableRow({ row, selected, onSelectRow, onDeleteRow, details
     <ConfirmDialog
       open={confirmDialog.value}
       onClose={confirmDialog.onFalse}
-      title="Delete"
-      content="Are you sure want to delete?"
+      title="Видалення"
+      content={`Ви впевнені що бажаєте видалити замовлення #${row.id}`}
       action={
         <Button variant="contained" color="error" onClick={onDeleteRow}>
-          Delete
+          Видалити
         </Button>
       }
     />

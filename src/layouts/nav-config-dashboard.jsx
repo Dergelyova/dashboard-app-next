@@ -43,18 +43,18 @@ export const navData = [
   /**
    * Overview
    */
-  {
-    subheader: 'Overview',
-    items: [
-      { title: ' Cтатистика', path: paths.dashboard.root, icon: ICONS.dashboard },
-      // { title: 'Ecommerce', path: paths.dashboard.general.ecommerce, icon: ICONS.ecommerce },
-      // { title: 'Analytics', path: paths.dashboard.general.analytics, icon: ICONS.analytics },
-      // { title: 'Banking', path: paths.dashboard.general.banking, icon: ICONS.banking },
-      // { title: 'Booking', path: paths.dashboard.general.booking, icon: ICONS.booking },
-      // { title: 'File', path: paths.dashboard.general.file, icon: ICONS.file },
-      // { title: 'Course', path: paths.dashboard.general.course, icon: ICONS.course },
-    ],
-  },
+  // {
+  //   subheader: 'Overview',
+  //   items: [
+  //     { title: ' Cтатистика', path: paths.dashboard.root, icon: ICONS.dashboard },
+  //     // { title: 'Ecommerce', path: paths.dashboard.general.ecommerce, icon: ICONS.ecommerce },
+  //     // { title: 'Analytics', path: paths.dashboard.general.analytics, icon: ICONS.analytics },
+  //     // { title: 'Banking', path: paths.dashboard.general.banking, icon: ICONS.banking },
+  //     // { title: 'Booking', path: paths.dashboard.general.booking, icon: ICONS.booking },
+  //     // { title: 'File', path: paths.dashboard.general.file, icon: ICONS.file },
+  //     // { title: 'Course', path: paths.dashboard.general.course, icon: ICONS.course },
+  //   ],
+  // },
   /**
    * Management
    */
@@ -75,6 +75,16 @@ export const navData = [
       //   ],
       // },
       {
+        title: 'Замовлення',
+        path: paths.dashboard.order.root,
+        icon: ICONS.order,
+        children: [
+          { title: 'Список', path: paths.dashboard.order.root },
+
+          { title: 'Створити', path: paths.dashboard.order.new },
+        ],
+      },
+      {
         title: 'Продукт',
         path: paths.dashboard.product.root,
         icon: ICONS.product,
@@ -85,15 +95,7 @@ export const navData = [
           { title: 'Редагувати', path: paths.dashboard.product.demo.edit },
         ],
       },
-      {
-        title: 'Замовлення',
-        path: paths.dashboard.order.root,
-        icon: ICONS.order,
-        children: [
-          { title: 'Список', path: paths.dashboard.order.root },
-          { title: 'Деталі', path: paths.dashboard.order.demo.details },
-        ],
-      },
+
       // {
       //   title: 'Invoice',
       //   path: paths.dashboard.invoice.root,

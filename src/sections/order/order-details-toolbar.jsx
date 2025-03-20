@@ -98,7 +98,7 @@ export function OrderDetailsToolbar({
             justifyContent: 'flex-end',
           }}
         >
-          <Button
+          {/* <Button
             color="inherit"
             variant="outlined"
             endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
@@ -106,18 +106,18 @@ export function OrderDetailsToolbar({
             sx={{ textTransform: 'capitalize' }}
           >
             {status}
-          </Button>
+          </Button> */}
 
-          <Button
+          {/* <Button
             color="inherit"
             variant="outlined"
             startIcon={<Iconify icon="solar:printer-minimalistic-bold" />}
           >
             Print
-          </Button>
+          </Button> */}
 
           <Button color="inherit" variant="contained" startIcon={<Iconify icon="solar:pen-bold" />}>
-            Edit
+            Редагувати
           </Button>
         </Box>
       </Box>

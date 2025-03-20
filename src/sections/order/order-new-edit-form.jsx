@@ -69,7 +69,7 @@ export const NewProductSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-export function ProductNewEditForm({ currentProduct }) {
+export function OrderNewEditForm({ currentProduct }) {
   const router = useRouter();
 
   const [includeTaxes, setIncludeTaxes] = useState(false);

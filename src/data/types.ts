@@ -21,7 +21,8 @@ export interface Order {
   id?: number;
   client_name: string;
   client_contact_number: string;
-  comment: string;
+  client_email?: string;
+  comment?: string;
   date_of_order: string;
   order_type: string;
   order_status?: string;
