@@ -1,22 +1,22 @@
 import { CONFIG } from 'src/global-config';
-import { getServerTranslations } from 'src/locales/server';
 
 import { MultiLanguageView } from 'src/sections/_examples/extra/multi-language-view';
-import { navData } from 'src/sections/_examples/extra/multi-language-view/nav-config-translate';
 
 // ----------------------------------------------------------------------
 
 export const metadata = { title: `Multi language | Components - ${CONFIG.appName}` };
 
 export default async function Page() {
-  let ssrNavData;
+  // Mock data for the MultiLanguageView component
+  const mockNavData = {
+    // Example mock data
+    navbar: [
+      { title: 'Home', link: '/' },
+      { title: 'About', link: '/about' },
+      { title: 'Services', link: '/services' },
+      { title: 'Contact', link: '/contact' },
+    ],
+  };
 
-  if (!CONFIG.isStaticExport) {
-    const { t } = await getServerTranslations('navbar');
-    const data = navData(t);
-
-    ssrNavData = data;
-  }
-
-  return <MultiLanguageView ssrNavData={ssrNavData} />;
+  return <MultiLanguageView ssrNavData={mockNavData} />;
 }

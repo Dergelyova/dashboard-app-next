@@ -37,14 +37,31 @@ export async function detectLanguage() {
 // ----------------------------------------------------------------------
 
 export const getServerTranslations = cache(async (ns = defaultNS, options = {}) => {
-  const language = await detectLanguage();
+  try {
+    // Detect the user's language
+    const language = await detectLanguage();
+    if (!language) {
+      console.error('No language detected');
+      throw new Error('Failed to detect language');
+    }
 
-  const i18nextInstance = await initServerI18next(language, ns);
+    // Initialize the i18next instance
+    const i18nextInstance = await initServerI18next(language, ns);
+    if (!i18nextInstance) {
+      console.error('Failed to initialize i18next instance');
+      throw new Error('i18next instance initialization failed');
+    }
 
-  return {
-    t: i18nextInstance.getFixedT(language, Array.isArray(ns) ? ns[0] : ns, options.keyPrefix),
-    i18n: i18nextInstance,
-  };
+    // Return the translation function and i18next instance
+    return {
+      t: i18nextInstance.getFixedT(language, Array.isArray(ns) ? ns[0] : ns, options.keyPrefix),
+      i18n: i18nextInstance,
+    };
+  } catch (error) {
+    // Log the error and rethrow it
+    console.error('Error in getServerTranslations:', error);
+    throw error;
+  }
 });
 
 // ----------------------------------------------------------------------

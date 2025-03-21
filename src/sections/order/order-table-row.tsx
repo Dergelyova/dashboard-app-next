@@ -152,7 +152,7 @@ export function OrderTableRow({
                   justifyContent: 'space-between',
                   p: theme.spacing(1.5, 2, 1.5, 1.5),
                   '&:not(:last-of-type)': {
-                    borderBottom: `solid 2px ${theme.vars.palette.background.neutral}`,
+                    borderBottom: `solid 2px ${theme.palette.background.default}`,
                   },
                 })}
               >

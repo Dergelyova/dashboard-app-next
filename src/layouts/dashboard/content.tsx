@@ -1,25 +1,34 @@
 'use client';
 
 import { mergeClasses } from 'minimal-shared/utils';
-
-import { styled } from '@mui/material/styles';
+import { Breakpoint, styled } from '@mui/material/styles';
 import Container from '@mui/material/Container';
+import { SxProps, Theme } from '@mui/material/styles';
 
 import { useSettingsContext } from 'src/components/settings';
-
 import { layoutClasses } from '../core/classes';
+
+// Define props interface
+interface DashboardContentProps {
+  sx?: SxProps<Theme>;
+  children: React.ReactNode;
+  className?: string;
+  disablePadding?: boolean;
+  maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false;
+  layoutQuery?: number | Breakpoint;
+}
 
 // ----------------------------------------------------------------------
 
 export function DashboardContent({
   sx,
   children,
-  className,
-  disablePadding,
+  className = '',
+  disablePadding = false,
   maxWidth = 'lg',
   layoutQuery = 'lg',
   ...other
-}) {
+}: DashboardContentProps) {
   const settings = useSettingsContext();
 
   const isNavHorizontal = settings.state.navLayout === 'horizontal';
@@ -40,13 +49,7 @@ export function DashboardContent({
             ...(isNavHorizontal && { '--layout-dashboard-content-pt': '40px' }),
           },
           ...(disablePadding && {
-            p: {
-              xs: 0,
-              sm: 0,
-              md: 0,
-              lg: 0,
-              xl: 0,
-            },
+            p: { xs: 0, sm: 0, md: 0, lg: 0, xl: 0 },
           }),
         }),
         ...(Array.isArray(sx) ? sx : [sx]),
@@ -71,7 +74,7 @@ export const VerticalDivider = styled('span')(({ theme }) => ({
   marginLeft: theme.spacing(2.5),
   marginRight: theme.spacing(2.5),
   backgroundColor: 'currentColor',
-  color: theme.vars.palette.divider,
+  color: theme.palette?.divider || theme.palette.divider, // Ensure vars fallback
   '&::before, &::after': {
     top: -5,
     width: 3,
