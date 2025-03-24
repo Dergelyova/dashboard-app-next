@@ -116,7 +116,13 @@ export function OrderDetailsToolbar({
             Print
           </Button> */}
 
-          <Button color="inherit" variant="contained" startIcon={<Iconify icon="solar:pen-bold" />}>
+          <Button
+            component={RouterLink}
+            color="inherit"
+            variant="contained"
+            startIcon={<Iconify icon="solar:pen-bold" />}
+            href="edit"
+          >
             Редагувати
           </Button>
         </Box>

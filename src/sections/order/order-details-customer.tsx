@@ -21,11 +21,11 @@ export function OrderDetailsCustomer({ ...props }: OrderDetailsCustomerProps) {
     <>
       <CardHeader
         title="Клієнт"
-        action={
-          <IconButton>
-            <Iconify icon="solar:pen-bold" />
-          </IconButton>
-        }
+        // action={
+        //   <IconButton>
+        //     <Iconify icon="solar:pen-bold" />
+        //   </IconButton>
+        // }
       />
       <Box sx={{ p: 3, display: 'flex' }}>
         <Avatar sx={{ width: 48, height: 48, mr: 2 }} />

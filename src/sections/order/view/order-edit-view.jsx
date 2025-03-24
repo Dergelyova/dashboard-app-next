@@ -6,23 +6,24 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import NewOrder from '../form/new-order';
+import EditOrder from '../form/edit-order';
 
 // ----------------------------------------------------------------------
 
-export function OrderCreateView() {
+export function OrderEditView({ order }) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Створити нове замовлення"
+        heading="Редагувати замовлення"
         links={[
-          { name: 'Список замовлень', href: paths.dashboard.root },
-          { name: 'Нове замовлення' },
+          { name: 'Список замовлень', href: paths.dashboard.order },
+          { name: `Замовлення #${order.id}`, href: paths.dashboard.order.details(order.id) },
+          { name: 'Редагувати' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <NewOrder />
+      <EditOrder order={order} />
     </DashboardContent>
   );
 }
