@@ -69,7 +69,7 @@ export function OrderDetailsToolbar({
 
           <Stack spacing={0.5}>
             <Box sx={{ gap: 1, display: 'flex', alignItems: 'center' }}>
-              <Typography variant="h4"> Order {orderNumber} </Typography>
+              <Typography variant="h4"> Замовлення {orderNumber} </Typography>
               <Label
                 variant="soft"
                 color={

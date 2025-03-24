@@ -23,7 +23,7 @@ interface OrderDetailsViewProps {
   order: Order;
 }
 export function OrderDetailsView({ order }: OrderDetailsViewProps) {
-  const [status, setStatus] = useState('pending');
+  const [status, setStatus] = useState('в прогресі');
 
   const handleChangeStatus = useCallback((newValue) => {
     setStatus(newValue);

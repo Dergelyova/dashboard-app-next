@@ -96,7 +96,7 @@ export const ItemDetails = ({ item }: { item: OrderProduct }) => {
             </Typography>
           </DataRow>
           <DataRow fieldName="Кольори">
-            <Stack spacing={2} direction={'row'}>
+            <Stack spacing={2} direction={'row'} flexWrap={'wrap'}>
               {item.item_colors.map((color, i) => (
                 //color info view
                 <Box
