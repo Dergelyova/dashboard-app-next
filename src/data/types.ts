@@ -10,6 +10,7 @@ export interface OrderProduct {
   id?: number;
   item_name: string;
   item_model: string;
+  item_image?: string;
   item_colors: OrderItemColor[];
   item_total_amount: number;
   item_order_link: string;

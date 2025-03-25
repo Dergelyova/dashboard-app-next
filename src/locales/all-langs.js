@@ -6,6 +6,7 @@ import {
   viVN as viVNCore,
   zhCN as zhCNCore,
   arSA as arSACore,
+  ukUA as ukUACore,
 } from '@mui/material/locale';
 // date pickers (MUI)
 import {
@@ -13,6 +14,7 @@ import {
   frFR as frFRDate,
   viVN as viVNDate,
   zhCN as zhCNDate,
+  ukUA as ukUADate,
 } from '@mui/x-date-pickers/locales';
 // data grid (MUI)
 import {
@@ -21,6 +23,7 @@ import {
   viVN as viVNDataGrid,
   zhCN as zhCNDataGrid,
   arSD as arSDDataGrid,
+  ukUA as ukUaDataGrid,
 } from '@mui/x-data-grid/locales';
 
 // ----------------------------------------------------------------------
@@ -74,6 +77,16 @@ export const allLangs = [
     numberFormat: { code: 'ar', currency: 'AED' },
     systemValue: {
       components: { ...arSACore.components, ...arSDDataGrid.components },
+    },
+  },
+  {
+    value: 'uk',
+    label: 'Ukrainian',
+    countryCode: 'UA',
+    adapterLocale: 'uk',
+    numberFormat: { code: 'uk-UA', currency: 'UAH' },
+    systemValue: {
+      components: { ...ukUACore.components, ...ukUADate.components, ...ukUaDataGrid.components },
     },
   },
 ];

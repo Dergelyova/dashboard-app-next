@@ -27,9 +27,9 @@ import relativeTime from 'dayjs/plugin/relativeTime';
  *
  */
 
+dayjs.locale('uk');
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
-dayjs.locale('uk');
 
 // ----------------------------------------------------------------------
 

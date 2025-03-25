@@ -374,8 +374,9 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'Всі' }, ...ORDER_STATUS_OPTIO
 const TABLE_HEAD = [
   { id: 'orderNumber', label: 'Номер', width: 88 },
   { id: 'name', label: 'Клієнт' },
-  { id: 'createdAt', label: 'Дата', width: 140 },
-  { id: 'totalQuantity', label: 'Кількість', width: 120, align: 'center' },
+  { id: 'createdAt', label: 'Дата замовлення' },
+  { id: 'duration', label: 'Час в роботі', width: 140, align: 'center' },
+  { id: 'totalQuantity', label: 'Кількість найменувань', align: 'center' },
 
   { id: 'status', label: 'Статус', width: 110 },
   { id: '', width: 88 },
@@ -469,11 +470,7 @@ export function OrderListView({ orders }: OrdersPageProps) {
       <DashboardContent>
         <CustomBreadcrumbs
           heading="Список замовлень"
-          links={[
-            { name: 'Дашборд', href: paths.dashboard.root },
-            { name: 'Замовлення', href: paths.dashboard.order.root },
-            { name: 'Список' },
-          ]}
+          links={[{ name: 'Дашборд', href: paths.dashboard.root }, { name: 'Список замовлень' }]}
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 

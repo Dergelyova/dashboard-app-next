@@ -18,7 +18,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { RouterLink } from 'src/routes/components';
 
 import { fCurrency } from 'src/utils/format-number';
-import { fDate, fTime } from 'src/utils/format-time';
+import { fDate, fTime, fToNow } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
@@ -26,6 +26,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover } from 'src/components/custom-popover';
 import { Order } from 'src/data/types';
 import { CONFIG } from 'src/global-config';
+import React from 'react';
 
 // -------------------------------------------------------
 // ---------------
@@ -83,14 +84,21 @@ export function OrderTableRow({
       <TableCell>
         <ListItemText
           primary={fDate(row.date_of_order)}
-          secondary={fTime(row.date_of_order)}
           slotProps={{
             primary: {
               noWrap: true,
               sx: { typography: 'body2' },
             },
-            secondary: {
-              sx: { mt: 0.5, typography: 'caption' },
+          }}
+        />
+      </TableCell>
+      <TableCell align="center">
+        <ListItemText
+          primary={fToNow(row.date_of_order)}
+          slotProps={{
+            primary: {
+              noWrap: true,
+              sx: { typography: 'body2' },
             },
           }}
         />
@@ -156,55 +164,76 @@ export function OrderTableRow({
                   },
                 })}
               >
-                <Avatar
-                  // src={item.coverUrl}
-                  src={`/assets/images/mock/m-product/product-2.webp`}
-                  variant="rounded"
-                  sx={{ width: 48, height: 48, mr: 2 }}
-                />
-
-                <ListItemText
-                  primary={item.item_name}
-                  secondary={item.item_model}
-                  slotProps={{
-                    primary: {
-                      sx: { typography: 'body2' },
-                    },
-                    secondary: {
-                      sx: { mt: 0.5, color: 'text.disabled' },
-                    },
-                  }}
-                />
-                <ListItemText
-                  primary={item.item_manufacture}
-                  secondary={'Виробництво'}
-                  slotProps={{
-                    primary: {
-                      sx: { typography: 'body2' },
-                    },
-                    secondary: {
-                      sx: { color: 'text.disabled' },
-                    },
-                  }}
-                />
-                <Stack direction={'row'} spacing={2}>
-                  {item.item_colors.map((color) => (
-                    <ListItemText
-                      primary={color.color}
-                      secondary={`Ж.${color.amount_woman}| Ч.${color.amount_man}| Д.${color.amount_kids}`}
-                      slotProps={{
-                        primary: {
-                          sx: { typography: 'body2' },
-                        },
-                        secondary: {
-                          sx: { mt: 0.5, color: 'text.disabled' },
-                        },
-                      }}
+                <Stack
+                  direction={'row'}
+                  spacing={4}
+                  sx={(theme) => ({
+                    alignItems: 'center',
+                  })}
+                >
+                  {!!item.item_image && (
+                    <Avatar
+                      // src={item.coverUrl}
+                      src={`/assets/images/mock/m-product/product-2.webp`}
+                      variant="rounded"
+                      sx={{ width: 48, height: 48, mr: 2 }}
                     />
-                  ))}
+                  )}
+                  <ListItemText
+                    primary={item.item_name}
+                    secondary={item.item_model}
+                    slotProps={{
+                      primary: {
+                        sx: { typography: 'body2' },
+                      },
+                      secondary: {
+                        sx: { mt: 0.5, color: 'text.disabled' },
+                      },
+                    }}
+                  />
+                  <ListItemText
+                    primary={item.item_manufacture}
+                    secondary={'Виробництво'}
+                    slotProps={{
+                      primary: {
+                        sx: { typography: 'body2' },
+                      },
+                      secondary: {
+                        sx: { color: 'text.disabled' },
+                      },
+                    }}
+                  />
                 </Stack>
+                <Stack direction={'row'} spacing={2} sx={{ alignItems: 'center' }}>
+                  <Stack direction={'row'} spacing={2}>
+                    {item.item_colors.map((color) => (
+                      <ListItemText
+                        primary={color.color}
+                        secondary={`Ж.${color.amount_woman}| Ч.${color.amount_man}| Д.${color.amount_kids}`}
+                        slotProps={{
+                          primary: {
+                            sx: { typography: 'body2' },
+                          },
+                          secondary: {
+                            sx: { mt: 0.5, color: 'text.disabled' },
+                          },
+                        }}
+                      />
+                    ))}
+                  </Stack>
 
-                <div>x{item.item_total_amount} </div>
+                  {/* calculate total amount */}
+                  <div>
+                    x{' '}
+                    {item.item_colors.reduce(
+                      (acc, color) =>
+                        acc +
+                        (color.amount_total ||
+                          color.amount_kids + color.amount_man + color.amount_woman),
+                      0
+                    )}{' '}
+                  </div>
+                </Stack>
 
                 {/* <Box sx={{ width: 110, textAlign: 'right' }}>{fCurrency(item.price)}</Box> */}
               </Box>
@@ -214,6 +243,85 @@ export function OrderTableRow({
       </TableCell>
     </TableRow>
   );
+
+  // const renderSecondaryRow = () => (
+  //   <TableRow>
+  //     <TableCell sx={{ p: 0, border: 'none' }} colSpan={8}>
+  //       <Collapse
+  //         in={collapseRow.value}
+  //         timeout="auto"
+  //         unmountOnExit
+  //         sx={{ bgcolor: 'background.neutral' }}
+  //       >
+  //         <Paper sx={{ m: 1.5, p: 2 }}>
+  //           <Box
+  //             sx={{
+  //               display: 'grid',
+  //               gridTemplateColumns: '48px 2fr 1fr 2fr 80px', // Define fixed widths per column
+  //               gap: 2,
+  //               alignItems: 'center',
+  //             }}
+  //           >
+  //             {row.order_items.map((item) => (
+  //               <React.Fragment key={item.id}>
+  //                 {!!item.item_image && (
+  //                   <Avatar
+  //                     src={`/assets/images/mock/m-product/product-2.webp`}
+  //                     variant="rounded"
+  //                     sx={{ width: 48, height: 48 }}
+  //                   />
+  //                 )}
+
+  //                 <ListItemText
+  //                   primary={item.item_name}
+  //                   secondary={item.item_model}
+  //                   slotProps={{
+  //                     primary: { sx: { typography: 'body2' } },
+  //                     secondary: { sx: { mt: 0.5, color: 'text.disabled' } },
+  //                   }}
+  //                 />
+
+  //                 <ListItemText
+  //                   primary={item.item_manufacture}
+  //                   secondary={'Виробництво'}
+  //                   slotProps={{
+  //                     primary: { sx: { typography: 'body2' } },
+  //                     secondary: { sx: { color: 'text.disabled' } },
+  //                   }}
+  //                 />
+
+  //                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+  //                   {item.item_colors.map((color, index) => (
+  //                     <ListItemText
+  //                       key={index}
+  //                       primary={color.color}
+  //                       secondary={`Ж.${color.amount_woman}| Ч.${color.amount_man}| Д.${color.amount_kids}`}
+  //                       slotProps={{
+  //                         primary: { sx: { typography: 'body2' } },
+  //                         secondary: { sx: { mt: 0.5, color: 'text.disabled' } },
+  //                       }}
+  //                     />
+  //                   ))}
+  //                 </Box>
+
+  //                 <Box sx={{ textAlign: 'right', fontWeight: 'bold' }}>
+  //                   x{' '}
+  //                   {item.item_colors.reduce(
+  //                     (acc, color) =>
+  //                       acc +
+  //                       (color.amount_total ||
+  //                         color.amount_kids + color.amount_man + color.amount_woman),
+  //                     0
+  //                   )}
+  //                 </Box>
+  //               </React.Fragment>
+  //             ))}
+  //           </Box>
+  //         </Paper>
+  //       </Collapse>
+  //     </TableCell>
+  //   </TableRow>
+  // );
 
   const renderMenuActions = () => (
     <CustomPopover

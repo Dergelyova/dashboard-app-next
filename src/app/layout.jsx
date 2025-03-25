@@ -55,7 +55,7 @@ export const metadata = {
 async function getAppConfig() {
   if (CONFIG.isStaticExport) {
     return {
-      lang: 'en',
+      lang: 'uk',
       i18nLang: undefined,
       cookieSettings: undefined,
       dir: defaultSettings.direction,
@@ -64,8 +64,8 @@ async function getAppConfig() {
     const [lang, settings] = await Promise.all([detectLanguage(), detectSettings()]);
 
     return {
-      lang: lang ?? 'en',
-      i18nLang: lang ?? 'en',
+      lang: 'uk',
+      i18nLang: lang ?? 'uk',
       cookieSettings: settings,
       dir: settings.direction,
     };
