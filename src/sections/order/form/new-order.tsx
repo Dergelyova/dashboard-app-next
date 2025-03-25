@@ -32,6 +32,7 @@ const NewOrder: React.FC = () => {
     comment: '',
     date_of_order: dayjs(new Date()).format(formatPatterns.date),
     order_type: '',
+    order_status: 'pending',
     order_items: [{ ...defaultItem }],
   };
 

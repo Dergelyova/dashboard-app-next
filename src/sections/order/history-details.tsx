@@ -21,6 +21,7 @@ import dayjs from 'dayjs';
 
 import { useState } from 'react';
 import { formatPatterns } from 'src/utils/format-time';
+import { DatePicker } from '@mui/x-date-pickers';
 
 // Convert Step History to a Map
 const createHistoryDetailsMap = (historyDetails: StepHistory[]): Map<number, StepHistory> => {
@@ -45,9 +46,11 @@ export const HistoryDetails = ({
   itemId: number;
   updateCurrentStep: (step: number) => void;
 }) => {
-  const [activeStep, setActiveStep] = useState(history.length - 1);
+  const [activeStep, setActiveStep] = useState(
+    history.length === 7 && !!history[6]?.date_ended ? 7 : history.length - 1
+  );
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [completionDate, setCompletionDate] = useState(dayjs().format(formatPatterns.split.date));
+  const [completionDate, setCompletionDate] = useState(dayjs().format(formatPatterns.date));
   const [historyDetailsMap, setHistoryDetailsMap] = useState<Map<number, StepHistory>>(
     createHistoryDetailsMap(history)
   );
@@ -71,12 +74,11 @@ export const HistoryDetails = ({
     setHistoryDetailsMap((prevMap) => {
       const newMap = new Map(prevMap);
       newMap.set(activeStep, updatedStepInfo);
+      const nextStep = activeStep + 1;
+      setActiveStep(nextStep);
 
       //update started step
-      if (activeStep < STEPS.length - 1) {
-        const nextStep = activeStep + 1;
-        setActiveStep(nextStep);
-
+      if (nextStep < STEPS.length) {
         const updatedStartedStepInfo = {
           ...prevMap.get(nextStep),
           step_id: nextStep,
@@ -84,18 +86,18 @@ export const HistoryDetails = ({
         } as StepHistory;
 
         newMap.set(nextStep, updatedStartedStepInfo);
-        updateCurrentStep(nextStep);
       }
-
+      updateCurrentStep(nextStep);
       //save new history to db
       const newHistory = revertHistoryDetailsMap(newMap);
+
       updateOrderProductHistory(newHistory, itemId);
 
       return newMap;
     });
 
     //reset completion date
-    setCompletionDate(dayjs().format(formatPatterns.split.date));
+    setCompletionDate(dayjs().format(formatPatterns.date));
 
     //close dialog
     setDialogOpen(false);
@@ -123,7 +125,7 @@ export const HistoryDetails = ({
                       <Typography variant="caption">
                         Дата завершення етапу:
                         {` ${dayjs(historyDetailsMap.get(step.id)?.date_ended).format(
-                          formatPatterns.split.date
+                          formatPatterns.date
                         )}`}
                       </Typography>
                     )}
@@ -162,12 +164,11 @@ export const HistoryDetails = ({
         <DialogTitle>Підтвердження завершення етапу</DialogTitle>
         <DialogContent>
           <Typography>Ви впевнені, що хочете завершити цей етап?</Typography>
-          <TextField
+          <DatePicker
             label="Дата завершення"
-            type="date"
-            fullWidth
-            value={completionDate}
-            onChange={(e) => setCompletionDate(e.target.value)}
+            value={dayjs(completionDate)}
+            format={formatPatterns.paramCase.date}
+            onChange={(e) => setCompletionDate(e)}
             sx={{ mt: 2 }}
           />
         </DialogContent>

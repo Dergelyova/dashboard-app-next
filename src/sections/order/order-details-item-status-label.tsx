@@ -18,6 +18,7 @@ const orderStatusLabels: Record<number, string> = {
   4: 'Етап 4 | Друк (До 9 днів)',
   5: 'Етап 5 | Підготовка до пошиття (До 3 днів)',
   6: 'Етап 6 | Пошиття (До 14 днів)',
+  7: 'Виробництво завершено',
 };
 
 export const StepColorChip = ({ stepNumber }: { stepNumber: number }) => {

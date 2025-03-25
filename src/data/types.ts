@@ -26,7 +26,7 @@ export interface Order {
   comment?: string;
   date_of_order: string;
   order_type: string;
-  order_status?: string;
+  order_status?: 'pending' | 'completed';
   order_items: OrderProduct[];
 }
 

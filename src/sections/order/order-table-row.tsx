@@ -27,6 +27,7 @@ import { CustomPopover } from 'src/components/custom-popover';
 import { Order } from 'src/data/types';
 import { CONFIG } from 'src/global-config';
 import React from 'react';
+import { ORDER_STATUS_OPTIONS } from 'src/_mock';
 
 // -------------------------------------------------------
 // ---------------
@@ -109,20 +110,20 @@ export function OrderTableRow({
       {/* <TableCell> {fCurrency(row.subtotal)} </TableCell> */}
 
       <TableCell>
-        {/* <Label
+        <Label
           variant="soft"
           color={
-            (row.status === 'completed' && 'success') ||
-            (row.status === 'pending' && 'warning') ||
-            (row.status === 'cancelled' && 'error') ||
+            (row.order_status === 'completed' && 'success') ||
+            (row.order_status === 'pending' && 'warning') ||
             'default'
           }
         >
-          {row.status}
-        </Label> */}
-        <Label variant="soft" color={'warning'}>
-          {'в процесі'}
+          {ORDER_STATUS_OPTIONS.find((option) => option.value === row.order_status)?.label ||
+            'в процесі'}
         </Label>
+        {/* <Label variant="soft" color={'warning'}>
+          {'в процесі'}
+        </Label> */}
       </TableCell>
 
       <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>

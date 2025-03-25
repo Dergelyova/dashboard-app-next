@@ -4,7 +4,7 @@ import { _mock } from './_mock';
 
 export const ORDER_STATUS_OPTIONS = [
   { value: 'pending', label: 'В процесі' },
-  { value: 'completed', label: 'Завершені' },
+  { value: 'completed', label: 'Завершено' },
 ];
 
 const ITEMS = Array.from({ length: 3 }, (_, index) => ({

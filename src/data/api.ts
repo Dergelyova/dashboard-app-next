@@ -1,6 +1,6 @@
-import type { Order, StepHistory } from "./types";
+import type { Order, StepHistory } from './types';
 
-const STORAGE_KEY = "orders";
+const STORAGE_KEY = 'orders';
 
 const getStoredOrders = (): Order[] => {
   const data = localStorage.getItem(STORAGE_KEY);
@@ -45,18 +45,22 @@ export const updateOrder = (updatedOrder: Order): Order | null => {
   return updatedOrder;
 };
 
-export const updateOrderProductHistory = (
-  history: StepHistory[],
-  orderItemId: number
-) => {
+export const updateOrderProductHistory = (history: StepHistory[], orderItemId: number) => {
   const orders = getStoredOrders();
-  const order = orders.find((order) =>
-    order.order_items.find((item) => item.id === orderItemId)
-  );
+  const order = orders.find((order) => order.order_items.find((item) => item.id === orderItemId));
   if (!order) return;
   const orderItem = order.order_items.find((item) => item.id === orderItemId);
   if (!orderItem) return;
   orderItem.item_step_history = history;
+
+  //add logic with order status
+  const isOrderCompleted = order.order_items.every(
+    (item) => item.item_step_history.length === 7 && !!item.item_step_history[6]?.date_ended
+  );
+
+  if (isOrderCompleted) {
+    order.order_status = 'completed';
+  }
   saveOrders(orders);
 };
 

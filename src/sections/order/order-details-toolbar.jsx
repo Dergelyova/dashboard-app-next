@@ -79,7 +79,7 @@ export function OrderDetailsToolbar({
                   'default'
                 }
               >
-                {status}
+                {statusOptions.find((option) => option.value === status)?.label || 'в процесі'}
               </Label>
             </Box>
 

@@ -22,7 +22,11 @@ const DataRow = ({ fieldName, children }: { fieldName: string; children: React.R
   );
 };
 export const ItemDetails = ({ item }: { item: OrderProduct }) => {
-  const [currentStep, setCurrentStep] = useState(+item.item_step_history.length - 1);
+  const [currentStep, setCurrentStep] = useState(
+    item.item_step_history.length === 7 && !!item.item_step_history[6]?.date_ended
+      ? 7
+      : item.item_step_history.length - 1
+  );
   return (
     <Card sx={{ p: 2, borderBlockEnd: '1px dashed #eeeeee' }}>
       <Stack direction="row" spacing={2}>
