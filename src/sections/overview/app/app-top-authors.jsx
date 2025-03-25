@@ -56,7 +56,6 @@ function Item({ item, index, sx, ...other }) {
             color: 'text.secondary',
           }}
         >
-          <Iconify icon="solar:heart-bold" width={14} />
           {fShortenNumber(item.totalFavorites)}
         </Box>
       </Box>

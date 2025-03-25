@@ -23,13 +23,36 @@ export const Logo = forwardRef((props, ref) => {
   const PRIMARY_DARKER = theme.vars.palette.primary.dark;
 
   const singleLogo = (
-    <img alt="Single logo" src="/logo/logo-full-youp.svg" width="100%" height="100%" />
+    <img alt="Single logo" src="/logo/logo-full-youp-dark.svg" width="100%" height="100%" />
   );
 
   const fullLogo = (
-    <img alt="Full logo" src="/logo/logo-full-youp.svg" width="100%" height="100%" />
+    <img alt="Full logo" src="/logo/logo-full-youp-dark.svg" width="100%" height="100%" />
   );
 
+  const singleLogoTest = (
+    <svg viewBox="0 0 850.4 850.4" style={{ enableBackground: 'new 0 0 850.4 850.4' }}>
+      <path d="M466.5,334.2c-9.3-19.5-23.8-36-41.6-47.8v-7.9h41.6V334.2z" fill={PRIMARY_MAIN} />
+      <path
+        d="M583.9,421.7v55c-15.6,9-33.6,14.1-52.8,14.1c-30.8,0-58.5-13.1-77.8-34c9.6-12.3,16.7-26.5,20.8-42 c10.8,20.4,32.3,34.3,57,34.3C552.9,449.2,572.2,438.3,583.9,421.7z"
+        fill={PRIMARY_MAIN}
+      />
+      <path
+        d="M360.1,278.6c-14.5,0-28.4,2.9-41,8.2l-65,104c3.1,55.8,49.4,100.1,106,100.1c58.6,0,106.2-47.5,106.2-106.2 C466.3,326.1,418.8,278.6,360.1,278.6z M360.1,449.3c-35.7,0-64.6-28.9-64.6-64.5c0-35.7,28.9-64.5,64.6-64.5s64.5,28.9,64.5,64.5 C424.7,420.4,395.8,449.3,360.1,449.3z"
+        fill={PRIMARY_MAIN}
+      />
+      <polygon
+        points="310.6,278.6 197.4,459.8 197.4,518.1 155.7,518.1 155.7,459.8 42.5,278.6 91.6,278.6 176.6,414.5 261.5,278.6"
+        fill={PRIMARY_MAIN}
+      />
+      <path
+        d="M701.7,278.6c-24.3,0-46.7,8.2-64.5,21.9v-21.9h-41.6v239.6h41.6v-49.1c17.9,13.7,40.3,21.9,64.5,21.9 c58.6,0,106.2-47.5,106.2-106.2C807.9,326.1,760.3,278.6,701.7,278.6z M701.7,449.3c-35.7,0-64.5-28.9-64.5-64.5 c0-35.7,28.9-64.5,64.5-64.5s64.6,28.9,64.6,64.5C766.2,420.4,737.3,449.3,701.7,449.3z"
+        fill={PRIMARY_MAIN}
+      />
+      <rect x="155.3" y="529.7" width="42.1" height="42.1" fill={PRIMARY_LIGHT} />
+      <rect x="595.5" y="529.7" width="42.1" height="42.1" fill={PRIMARY_LIGHT} />
+    </svg>
+  );
   // const singleLogo = (
   //   <svg
   //     width="100%"
@@ -179,7 +202,7 @@ export const Logo = forwardRef((props, ref) => {
       ]}
       {...other}
     >
-      {isSingle ? singleLogo : fullLogo}
+      {isSingle ? singleLogoTest : fullLogo}
     </LogoRoot>
   );
 });
