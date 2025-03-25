@@ -30,15 +30,17 @@ export const ItemDetails = ({ item }: { item: OrderProduct }) => {
   return (
     <Card sx={{ p: 2, borderBlockEnd: '1px dashed #eeeeee' }}>
       <Stack direction="row" spacing={2}>
-        <Box>
-          <Image
-            src={'/assets/images/mock/m-product/product-2.webp'}
-            alt="t-shirt example"
-            width={70}
-            style={{ borderRadius: '10px' }}
-            height={70}
-          />
-        </Box>
+        {!!item.item_image && (
+          <Box>
+            <Image
+              src={'/assets/images/mock/m-product/product-2.webp'}
+              alt="t-shirt example"
+              width={70}
+              style={{ borderRadius: '10px' }}
+              height={70}
+            />
+          </Box>
+        )}
         <Stack direction={'row'} justifyContent={'space-between'} width={'100%'}>
           <Stack direction={'column'} justifyContent={'space-between'}>
             <Box>

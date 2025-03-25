@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 
 import { RouterLink } from 'src/routes/components';
 
-import { fDateTime } from 'src/utils/format-time';
+import { fDate } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
@@ -69,7 +69,7 @@ export function OrderDetailsToolbar({
 
           <Stack spacing={0.5}>
             <Box sx={{ gap: 1, display: 'flex', alignItems: 'center' }}>
-              <Typography variant="h4"> Замовлення {orderNumber} </Typography>
+              <Typography variant="h4"> Замовлення #{orderNumber} </Typography>
               <Label
                 variant="soft"
                 color={
@@ -84,7 +84,7 @@ export function OrderDetailsToolbar({
             </Box>
 
             <Typography variant="body2" sx={{ color: 'text.disabled' }}>
-              {fDateTime(createdAt)}
+              {fDate(createdAt)}
             </Typography>
           </Stack>
         </Box>
@@ -116,15 +116,17 @@ export function OrderDetailsToolbar({
             Print
           </Button> */}
 
-          <Button
-            component={RouterLink}
-            color="inherit"
-            variant="contained"
-            startIcon={<Iconify icon="solar:pen-bold" />}
-            href="edit"
-          >
-            Редагувати
-          </Button>
+          {status !== 'completed' && (
+            <Button
+              component={RouterLink}
+              color="inherit"
+              variant="contained"
+              startIcon={<Iconify icon="solar:pen-bold" />}
+              href="edit"
+            >
+              Редагувати
+            </Button>
+          )}
         </Box>
       </Box>
 
