@@ -375,7 +375,7 @@ const TABLE_HEAD = [
   { id: 'orderNumber', label: 'Номер', width: 88 },
   { id: 'name', label: 'Клієнт' },
   { id: 'createdAt', label: 'Дата замовлення' },
-  { id: 'duration', label: 'Час в роботі', width: 140, align: 'center' },
+  { id: 'duration', label: 'Днів в роботі', width: 140, align: 'center' },
   { id: 'totalQuantity', label: 'Кількість найменувань', align: 'center' },
 
   { id: 'status', label: 'Статус', width: 110 },

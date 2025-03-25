@@ -135,6 +135,13 @@ export function fToNow(date) {
   return dayjs(date).toNow(true);
 }
 
+export function fToNowDays(date) {
+  if (!isValidDate(date)) {
+    return 'Invalid date';
+  }
+
+  return dayjs(dayjs()).diff(date, 'day');
+}
 // ----------------------------------------------------------------------
 
 /**

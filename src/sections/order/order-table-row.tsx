@@ -18,7 +18,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { RouterLink } from 'src/routes/components';
 
 import { fCurrency } from 'src/utils/format-number';
-import { fDate, fTime, fToNow } from 'src/utils/format-time';
+import { fDate, fTime, fToNow, fToNowDays } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
@@ -94,7 +94,7 @@ export function OrderTableRow({
       </TableCell>
       <TableCell align="center">
         <ListItemText
-          primary={fToNow(row.date_of_order)}
+          primary={fToNowDays(row.date_of_order)}
           slotProps={{
             primary: {
               noWrap: true,
