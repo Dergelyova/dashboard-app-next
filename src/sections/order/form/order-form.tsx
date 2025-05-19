@@ -18,7 +18,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 
 import type { Order, OrderItemColor, OrderProduct } from 'src/data/types';
-import { DatePicker } from '@mui/x-date-pickers';
+import { DatePicker, DateTimePicker, DesktopDateTimePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
@@ -67,11 +67,11 @@ const AddColorsForm = ({
           <TextField
             fullWidth
             label="Жін"
-            value={colorInfo.amount_woman}
+            value={colorInfo.amountWoman}
             onChange={(e) =>
               changeColorData({
                 ...colorInfo,
-                amount_woman: isNaN(+e.target.value) ? 0 : +e.target.value,
+                amountWoman: isNaN(+e.target.value) ? 0 : +e.target.value,
               })
             }
             sx={{ mb: 2 }}
@@ -79,11 +79,11 @@ const AddColorsForm = ({
           <TextField
             fullWidth
             label="Чол"
-            value={colorInfo.amount_man}
+            value={colorInfo.amountMan}
             onChange={(e) =>
               changeColorData({
                 ...colorInfo,
-                amount_man: isNaN(+e.target.value) ? 0 : +e.target.value,
+                amountMan: isNaN(+e.target.value) ? 0 : +e.target.value,
               })
             }
             sx={{ mb: 2 }}
@@ -91,11 +91,11 @@ const AddColorsForm = ({
           <TextField
             fullWidth
             label="Дит"
-            value={colorInfo.amount_kids}
+            value={colorInfo.amountKids}
             onChange={(e) =>
               changeColorData({
                 ...colorInfo,
-                amount_kids: isNaN(+e.target.value) ? 0 : +e.target.value,
+                amountKids: isNaN(+e.target.value) ? 0 : +e.target.value,
               })
             }
             sx={{ mb: 2 }}
@@ -103,7 +103,7 @@ const AddColorsForm = ({
         </Box>
         <Box display={'flex'} justifyContent={'space-between'}>
           <Typography>{`Всього: ${
-            colorInfo.amount_kids + colorInfo.amount_man + colorInfo.amount_woman
+            colorInfo.amountKids + colorInfo.amountMan + colorInfo.amountWoman
           } шт.`}</Typography>
           {isRemovable && (
             <Button onClick={removeColor} color="error" sx={{ padding: 0, margin: 0 }}>
@@ -153,22 +153,22 @@ const AddOrderItemForm = ({
           <TextField
             fullWidth
             label="Найменування виробу"
-            value={item.item_name}
+            value={item.itemName}
             onChange={(e) =>
               handleUpdate({
                 ...item,
-                item_name: e.target.value,
+                itemName: e.target.value,
               })
             }
           />
           <TextField
             fullWidth
             label="Модель виробу"
-            value={item.item_model}
+            value={item.itemModel}
             onChange={(e) =>
               handleUpdate({
                 ...item,
-                item_model: e.target.value,
+                itemModel: e.target.value,
               })
             }
           />
@@ -176,34 +176,34 @@ const AddOrderItemForm = ({
         <TextField
           fullWidth
           label="Посилання на замовлення"
-          value={item.item_order_link}
+          value={item.itemOrderLink}
           onChange={(e) =>
             handleUpdate({
               ...item,
-              item_order_link: e.target.value,
+              itemOrderLink: e.target.value,
             })
           }
         />
         <TextField
           fullWidth
           label="Виробництво"
-          value={item.item_manufacture}
+          value={item.itemManufacture}
           onChange={(e) =>
             handleUpdate({
               ...item,
-              item_manufacture: e.target.value,
+              itemManufacture: e.target.value,
             })
           }
         />
         <Typography variant="body2" sx={{ textTransform: 'uppercase', fontWeight: '600' }}>
           Кольори
         </Typography>
-        {item.item_colors.map((color, colorIndex) => (
+        {item.itemColors.map((color, colorIndex) => (
           <AddColorsForm
             key={colorIndex}
             colorInfo={color}
             changeColorData={(value) => {
-              const updatedColors = item.item_colors.map((c, i) => {
+              const updatedColors = item.itemColors.map((c, i) => {
                 if (i === colorIndex) {
                   return value;
                 }
@@ -211,11 +211,11 @@ const AddOrderItemForm = ({
               });
               handleUpdate({
                 ...item,
-                item_colors: updatedColors,
+                itemColors: updatedColors,
               });
             }}
             removeColor={() => handleColorRemove(colorIndex)}
-            isRemovable={item.item_colors.length > 1}
+            isRemovable={item.itemColors.length > 1}
           />
         ))}
 
@@ -237,20 +237,20 @@ export default function OrderForm({ initialData, onSubmit }: OrderFormProps) {
 
   const [orderCoreData, setOrderCoreData] = useState<Partial<Order>>(initialData);
 
-  const [orderItems, setOrderItems] = useState(initialData.order_items);
+  const [orderItems, setOrderItems] = useState(initialData.orderItems);
 
   const handleSave = () => {
     setSaving(true);
     const updatedOrder: Order = {
       ...orderCoreData,
-      order_items: orderItems.map((item) =>
-        item.item_step_history.length === 0
+      orderItems: orderItems.map((item) =>
+        item.itemStepHistory.length === 0
           ? {
               ...item,
-              item_step_history: [
+              itemStepHistory: [
                 {
-                  step_id: 0,
-                  date_started: orderCoreData.date_of_order,
+                  stepId: 0,
+                  dateStarted: orderCoreData.dateOfOrder,
                 },
               ],
             }
@@ -286,16 +286,16 @@ export default function OrderForm({ initialData, onSubmit }: OrderFormProps) {
   const handleColorAdd = (index: number) => {
     handleItemUpdate(index, {
       ...orderItems[index],
-      item_colors: [...orderItems[index].item_colors, { ...defaultColor }],
+      itemColors: [...orderItems[index].itemColors, { ...defaultColor }],
     });
   };
 
   const handleColorRemove = (indexOfItem: number, indexOfColor: number) => {
-    const copiedItemColors = [...orderItems[indexOfItem].item_colors];
+    const copiedItemColors = [...orderItems[indexOfItem].itemColors];
     copiedItemColors.splice(indexOfColor, 1);
     handleItemUpdate(indexOfItem, {
       ...orderItems[indexOfItem],
-      item_colors: [...copiedItemColors],
+      itemColors: [...copiedItemColors],
     });
   };
 
@@ -309,11 +309,11 @@ export default function OrderForm({ initialData, onSubmit }: OrderFormProps) {
             <TextField
               fullWidth
               label="Найменування клієнта"
-              value={orderCoreData.client_name}
+              value={orderCoreData.clientName}
               onChange={(e) =>
                 setOrderCoreData({
                   ...orderCoreData,
-                  client_name: e.target.value,
+                  clientName: e.target.value,
                 })
               }
               sx={{ mb: 2 }}
@@ -322,22 +322,24 @@ export default function OrderForm({ initialData, onSubmit }: OrderFormProps) {
               <TextField
                 fullWidth
                 label="Контактний номер"
-                value={orderCoreData.client_contact_number}
+                value={orderCoreData.clientContactNumber}
                 onChange={(e) =>
                   setOrderCoreData({
                     ...orderCoreData,
-                    client_contact_number: e.target.value,
+                    clientContactNumber: e.target.value,
                   })
                 }
               />
-              <DatePicker
+              <DateTimePicker
+                ampm={false}
+                localeText={{ toolbarTitle: 'Оберіть час і дату' }}
                 label="Дата замовлення"
-                value={dayjs(orderCoreData.date_of_order)}
-                format={formatPatterns.paramCase.date}
+                value={dayjs(orderCoreData.dateOfOrder, formatPatterns.dateTime)}
+                format={formatPatterns.dateTime}
                 onChange={(e) =>
                   setOrderCoreData({
                     ...orderCoreData,
-                    date_of_order: dayjs(e).format(formatPatterns.date),
+                    dateOfOrder: dayjs(e).format(formatPatterns.dateTime),
                   })
                 }
               />
@@ -345,11 +347,11 @@ export default function OrderForm({ initialData, onSubmit }: OrderFormProps) {
             <TextField
               fullWidth
               label="Тип замовлення"
-              value={orderCoreData.order_type}
+              value={orderCoreData.orderType}
               onChange={(e) =>
                 setOrderCoreData({
                   ...orderCoreData,
-                  order_type: e.target.value,
+                  orderType: e.target.value,
                 })
               }
               sx={{ mb: 2 }}

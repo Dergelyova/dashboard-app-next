@@ -1,7 +1,7 @@
 'use client';
 import { updateOrderProductHistory } from 'src/data/api';
 import { STEPS } from 'src/data/mock';
-import type { StepHistory } from 'src/data/types';
+import type { Order, StepHistory } from 'src/data/types';
 import {
   Box,
   Button,
@@ -17,18 +17,19 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
 import { useState } from 'react';
 import { formatPatterns } from 'src/utils/format-time';
-import { DatePicker } from '@mui/x-date-pickers';
+import { DateTimePicker } from '@mui/x-date-pickers';
 
 // Convert Step History to a Map
 const createHistoryDetailsMap = (historyDetails: StepHistory[]): Map<number, StepHistory> => {
   const historyDetailsMap = new Map<number, StepHistory>();
   historyDetails.forEach((history) => {
-    historyDetailsMap.set(history.step_id, history);
+    historyDetailsMap.set(history.stepId, history);
   });
+  console.log(historyDetailsMap);
   return historyDetailsMap;
 };
 
@@ -37,20 +38,40 @@ const revertHistoryDetailsMap = (historyMap: Map<number, StepHistory>): StepHist
   return Array.from(historyMap.values());
 };
 
+export function getDurationInDaysAndHours(
+  startStr?: string,
+  endStr?: string,
+  format?: string
+): string {
+  if (!startStr) return '';
+
+  const start = dayjs(startStr, format);
+  const end = dayjs(endStr ?? dayjs().format(format), format);
+
+  const days = end.diff(start, 'day');
+  const hours = end.diff(start, 'hour') % 24;
+
+  return `${days} дн. ${hours} год.`;
+}
+
 export const HistoryDetails = ({
   history,
   itemId,
   updateCurrentStep,
+  order,
 }: {
   history: StepHistory[];
   itemId: number;
   updateCurrentStep: (step: number) => void;
+  order: Order;
 }) => {
   const [activeStep, setActiveStep] = useState(
-    history.length === 7 && !!history[6]?.date_ended ? 7 : history.length - 1
+    history.length === 7 && !!history[6]?.dateEnded ? 7 : history.length - 1
   );
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [completionDate, setCompletionDate] = useState(dayjs().format(formatPatterns.date));
+  const [completionDate, setCompletionDate] = useState<Dayjs | string>(
+    dayjs().format(formatPatterns.dateTime)
+  );
   const [historyDetailsMap, setHistoryDetailsMap] = useState<Map<number, StepHistory>>(
     createHistoryDetailsMap(history)
   );
@@ -67,8 +88,8 @@ export const HistoryDetails = ({
     //update finished step
     const updatedStepInfo = {
       ...historyDetailsMap.get(activeStep),
-      step_id: activeStep,
-      date_ended: completionDate,
+      stepId: activeStep, //for what?
+      dateEnded: completionDate,
     } as StepHistory;
 
     setHistoryDetailsMap((prevMap) => {
@@ -81,23 +102,25 @@ export const HistoryDetails = ({
       if (nextStep < STEPS.length) {
         const updatedStartedStepInfo = {
           ...prevMap.get(nextStep),
-          step_id: nextStep,
-          date_started: completionDate,
+          stepId: nextStep,
+          dateStarted: completionDate,
         } as StepHistory;
 
         newMap.set(nextStep, updatedStartedStepInfo);
       }
       updateCurrentStep(nextStep);
+
       //save new history to db
       const newHistory = revertHistoryDetailsMap(newMap);
 
-      updateOrderProductHistory(newHistory, itemId);
+      //here we need to replace
+      updateOrderProductHistory(newHistory, itemId, order);
 
       return newMap;
     });
 
     //reset completion date
-    setCompletionDate(dayjs().format(formatPatterns.date));
+    setCompletionDate(dayjs().format(formatPatterns.dateTime));
 
     //close dialog
     setDialogOpen(false);
@@ -115,18 +138,20 @@ export const HistoryDetails = ({
                   <Stack direction={'column'}>
                     {/* TODO: fix state update time */}
                     <Typography variant="caption" color="text">
-                      Днів в етапі:
-                      {` ${dayjs(historyDetailsMap.get(step.id)?.date_ended).diff(
-                        dayjs(historyDetailsMap.get(step.id)?.date_started),
-                        'day'
+                      Час в етапі:
+                      {` ${getDurationInDaysAndHours(
+                        historyDetailsMap.get(step.id)?.dateStarted,
+                        historyDetailsMap.get(step.id)?.dateEnded,
+                        formatPatterns.dateTime
                       )}`}
                     </Typography>
                     {step.id !== activeStep && (
                       <Typography variant="caption">
                         Дата завершення етапу:
-                        {` ${dayjs(historyDetailsMap.get(step.id)?.date_ended).format(
-                          formatPatterns.date
-                        )}`}
+                        {` ${dayjs(
+                          historyDetailsMap.get(step.id)?.dateEnded,
+                          formatPatterns.dateTime
+                        ).format(formatPatterns.dateTime)}`}
                       </Typography>
                     )}
                   </Stack>
@@ -136,9 +161,9 @@ export const HistoryDetails = ({
               {step.name}{' '}
               <Typography component={'span'} variant="caption">
                 {' '}
-                {!!step.max_duration_days &&
+                {!!step.maxDurationDays &&
                   `
-                (до ${step.max_duration_days} ${step.max_duration_days === 1 ? 'дня' : 'днів'})
+                (до ${step.maxDurationDays} ${step.maxDurationDays === 1 ? 'дня' : 'днів'})
               `}
               </Typography>
             </StepLabel>
@@ -164,10 +189,10 @@ export const HistoryDetails = ({
         <DialogTitle>Підтвердження завершення етапу</DialogTitle>
         <DialogContent>
           <Typography>Ви впевнені, що хочете завершити цей етап?</Typography>
-          <DatePicker
+          <DateTimePicker
             label="Дата завершення"
-            value={dayjs(completionDate)}
-            format={formatPatterns.paramCase.date}
+            value={dayjs(completionDate, formatPatterns.dateTime)}
+            format={formatPatterns.dateTime}
             onChange={(e) => setCompletionDate(e)}
             sx={{ mt: 2 }}
           />

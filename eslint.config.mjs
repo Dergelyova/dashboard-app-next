@@ -1,20 +1,19 @@
-import globals from 'globals';
 import eslintJs from '@eslint/js';
+import globals from 'globals';
+
 import reactPlugin from 'eslint-plugin-react';
-import importPlugin from 'eslint-plugin-import';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
+import importPlugin from 'eslint-plugin-import';
 import perfectionistPlugin from 'eslint-plugin-perfectionist';
 import unusedImportsPlugin from 'eslint-plugin-unused-imports';
+
+import tsPlugin from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
 
 // ----------------------------------------------------------------------
 
 /**
- * Custom ESLint rules configuration.
- */
-
-/**
  * @rules common
- * from 'react', 'eslint-plugin-react-hooks'...
  */
 const commonRules = () => ({
   ...reactHooksPlugin.configs.recommended.rules,
@@ -44,7 +43,6 @@ const commonRules = () => ({
 
 /**
  * @rules import
- * from 'eslint-plugin-import'.
  */
 const importRules = () => ({
   ...importPlugin.configs.recommended.rules,
@@ -56,14 +54,13 @@ const importRules = () => ({
   'import/newline-after-import': 2,
   'import/no-named-as-default-member': 0,
   'import/no-cycle': [
-    0, // disabled if slow
+    0,
     { maxDepth: '∞', ignoreExternal: false, allowUnsafeDynamicCyclicDependency: false },
   ],
 });
 
 /**
  * @rules unused imports
- * from 'eslint-plugin-unused-imports'.
  */
 const unusedImportsRules = () => ({
   'unused-imports/no-unused-imports': 1,
@@ -74,8 +71,7 @@ const unusedImportsRules = () => ({
 });
 
 /**
- * @rules sort or imports/exports
- * from 'eslint-plugin-perfectionist'.
+ * @rules sort imports/exports
  */
 const sortImportsRules = () => {
   const customGroups = {
@@ -146,44 +142,57 @@ const sortImportsRules = () => {
   };
 };
 
-/**
- * Custom ESLint configuration.
- */
-export const customConfig = {
-  plugins: {
-    'react-hooks': reactHooksPlugin,
-    'unused-imports': unusedImportsPlugin,
-    perfectionist: perfectionistPlugin,
-    import: importPlugin,
-  },
-  settings: {
-    'import/resolver': {
-      alias: {
-        map: [['src', './src']],
-        extensions: ['.js', '.jsx', '.json'],
-      },
-    },
-  },
-  rules: {
-    ...commonRules(),
-    ...importRules(),
-    ...unusedImportsRules(),
-    ...sortImportsRules(),
-  },
-};
-
 // ----------------------------------------------------------------------
 
+/**
+ * Export Flat ESLint Config
+ */
 export default [
-  { files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'] },
-  { ignores: ['*', '!src/', 'eslint.config.*'] },
   {
+    files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
+    ignores: ['*', '!src/', 'eslint.config.*'],
     languageOptions: {
-      globals: { ...globals.browser, ...globals.node },
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        project: './tsconfig.json',
+      },
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
     },
-    settings: { react: { version: 'detect' } },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+      'import/resolver': {
+        alias: {
+          map: [['src', './src']],
+          extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
+        },
+      },
+    },
+    plugins: {
+      react: reactPlugin,
+      'react-hooks': reactHooksPlugin,
+      'unused-imports': unusedImportsPlugin,
+      perfectionist: perfectionistPlugin,
+      import: importPlugin,
+      '@typescript-eslint': tsPlugin,
+    },
+    rules: {
+      ...eslintJs.configs.recommended.rules,
+      ...reactPlugin.configs.flat.recommended.rules,
+      ...tsPlugin.configs.recommended.rules,
+      ...commonRules(),
+      ...importRules(),
+      ...unusedImportsRules(),
+      ...sortImportsRules(),
+      // custom TS rules
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-shadow': ['error'],
+    },
   },
-  eslintJs.configs.recommended,
-  reactPlugin.configs.flat.recommended,
-  customConfig,
 ];

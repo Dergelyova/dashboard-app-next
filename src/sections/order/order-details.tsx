@@ -11,7 +11,7 @@ export const OrderDetails = ({ order }: { order: Order }) => {
         Деталі замовлення
       </Typography>
       <Stack spacing={2}>
-        {order?.order_items.map((item, i) => <ItemDetails key={i} item={item} />)}
+        {order?.orderItems.map((item, i) => <ItemDetails key={i} item={item} />)}
       </Stack>
     </Card>
   );

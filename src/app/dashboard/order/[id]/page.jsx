@@ -1,5 +1,3 @@
-'use client';
-
 import { getOrder } from 'src/data/api';
 
 import { OrderDetailsView } from 'src/sections/order/view';
@@ -8,11 +6,11 @@ import { OrderDetailsView } from 'src/sections/order/view';
 
 // export const metadata = { title: `Order details | Dashboard - ${CONFIG.appName}` };
 
-export default function Page({ params }) {
+export default async function Page({ params }) {
   const { id } = params;
 
   // const currentOrder = _orders.find((order) => order.id === id);
-  const currentOrder = getOrder(id);
+  const currentOrder = await getOrder(id);
 
   return <OrderDetailsView order={currentOrder} />;
 }

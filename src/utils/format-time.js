@@ -3,6 +3,7 @@ import 'dayjs/locale/uk';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 // ----------------------------------------------------------------------
 
 /**
@@ -30,11 +31,13 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.locale('uk');
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
+dayjs.extend(customParseFormat);
 
 // ----------------------------------------------------------------------
 
+//('dd.mm.yyyy hh:mm:ss');
 export const formatPatterns = {
-  dateTime: 'DD MMM YYYY h:mm a', // 17 Apr 2022 12:00 am
+  dateTime: 'DD.MM.YYYY HH:mm:ss', // 17.01.2022 12:00:00
   date: 'DD MMM YYYY', // 17 Apr 2022
   time: 'h:mm a', // 12:00 am
   split: {
@@ -47,7 +50,8 @@ export const formatPatterns = {
   },
 };
 
-const isValidDate = (date) => date !== null && date !== undefined && dayjs(date).isValid();
+const isValidDate = (date) =>
+  date !== null && date !== undefined && dayjs(date, formatPatterns.dateTime).isValid();
 
 // ----------------------------------------------------------------------
 
@@ -84,7 +88,7 @@ export function fDate(date, template) {
     return 'Invalid date';
   }
 
-  return dayjs(date).format(template ?? formatPatterns.date);
+  return dayjs(date, formatPatterns.dateTime).format(template ?? formatPatterns.dateTime);
 }
 
 // ----------------------------------------------------------------------
@@ -132,7 +136,7 @@ export function fToNow(date) {
     return 'Invalid date';
   }
 
-  return dayjs(date).toNow(true);
+  return dayjs(date, formatPatterns.dateTime).toNow(true);
 }
 
 export function fToNowDays(date) {
@@ -140,7 +144,8 @@ export function fToNowDays(date) {
     return 'Invalid date';
   }
 
-  return dayjs(dayjs()).diff(date, 'day');
+  const dateUpdated = dayjs(date, formatPatterns.dateTime);
+  return dayjs(dayjs()).diff(dateUpdated, 'day');
 }
 // ----------------------------------------------------------------------
 

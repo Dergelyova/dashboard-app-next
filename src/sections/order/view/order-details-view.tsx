@@ -23,7 +23,7 @@ interface OrderDetailsViewProps {
   order: Order;
 }
 export function OrderDetailsView({ order }: OrderDetailsViewProps) {
-  const [status, setStatus] = useState(order.order_status || 'pending');
+  const [status, setStatus] = useState(order.orderStatus || 'pending');
 
   const handleChangeStatus = useCallback((newValue) => {
     setStatus(newValue);
@@ -33,7 +33,7 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
     <DashboardContent>
       <OrderDetailsToolbar
         status={status}
-        createdAt={order?.date_of_order}
+        createdAt={order?.dateOfOrder}
         orderNumber={order?.id}
         backHref={paths.dashboard.order.root}
         onChangeStatus={handleChangeStatus}
@@ -45,15 +45,15 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
           <Box
             sx={{ gap: 3, display: 'flex', flexDirection: { xs: 'column-reverse', md: 'column' } }}
           >
-            {order?.order_items.map((item) => <ItemDetails item={item} />)}
+            {order?.orderItems.map((item) => <ItemDetails item={item} order={order} />)}
           </Box>
         </Grid>
 
         <Grid size={{ xs: 12, md: 4 }}>
           <Card>
             <OrderDetailsCustomer
-              name={order?.client_name}
-              contactNumber={order?.client_contact_number}
+              name={order?.clientName}
+              contactNumber={order?.clientContactNumber}
               comment={order?.comment}
               email={'email@email.com'}
             />

@@ -11,6 +11,7 @@ import { useMockedUser } from 'src/auth/hooks';
 import { AppTopAuthors } from '../app-top-authors';
 import { AppWidgetSummary } from '../app-widget-summary';
 import { AppCurrentDownload } from '../app-current-download';
+import { Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -21,6 +22,9 @@ export function OverviewAppView() {
 
   return (
     <DashboardContent maxWidth="xl">
+      <Typography mb={2} variant="h4" sx={{ maxWidth: '700px' }}>
+        Привіт! Це приклади статистичної інформації, яка може бути відображена на головній сторінці
+      </Typography>
       <Grid container spacing={3}>
         {/* <Grid size={{ xs: 12, md: 8 }}>
           <AppWelcome

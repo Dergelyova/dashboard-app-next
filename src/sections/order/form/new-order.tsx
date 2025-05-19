@@ -10,30 +10,27 @@ import { defaultItem } from 'src/data/mock';
 
 const NewOrder: React.FC = () => {
   const router = useRouter();
-  const handleCreate = (order: Order) => {
+  const handleCreate = async (order: Order) => {
     const newOrder = order;
-    setTimeout(() => {
-      console.log(newOrder);
-      createOrder(newOrder);
-
+    try {
+      await createOrder(newOrder);
       alert('Замовлення збережено. Ви будете перенаправлені на сторінку замовлень.');
-
-      setTimeout(() => {
-        router.push('dashboard/order');
-      }, 2000);
-    }, 1000); // Simulate API delay
+      // Simulate API delay
+    } catch {
+      alert('Шось пішло не так');
+    }
   };
 
   // Default values for a new order
   const defaultOrder: Order = {
-    client_name: '',
-    client_contact_number: '',
-    client_email: '',
+    clientName: '',
+    clientContactNumber: '',
+    clientEmail: '',
     comment: '',
-    date_of_order: dayjs(new Date()).format(formatPatterns.date),
-    order_type: '',
-    order_status: 'pending',
-    order_items: [{ ...defaultItem }],
+    dateOfOrder: dayjs(new Date()).format(formatPatterns.dateTime),
+    orderType: '',
+    orderStatus: 'pending',
+    orderItems: [{ ...defaultItem }],
   };
 
   return (

@@ -70,13 +70,13 @@ export function OrderTableRow({
 
       <TableCell>
         <Box sx={{ gap: 2, display: 'flex', alignItems: 'center' }}>
-          {/* <Avatar alt={row.client_name} src={row.customer.avatarUrl} /> */}
+          {/* <Avatar alt={row.clientName} src={row.customer.avatarUrl} /> */}
 
           <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
-            <Box component="span">{row.client_name}</Box>
+            <Box component="span">{row.clientName}</Box>
 
             <Box component="span" sx={{ color: 'text.disabled' }}>
-              {row.client_contact_number}
+              {row.clientContactNumber}
             </Box>
           </Stack>
         </Box>
@@ -84,7 +84,7 @@ export function OrderTableRow({
 
       <TableCell>
         <ListItemText
-          primary={fDate(row.date_of_order)}
+          primary={fDate(row.dateOfOrder)}
           slotProps={{
             primary: {
               noWrap: true,
@@ -95,7 +95,7 @@ export function OrderTableRow({
       </TableCell>
       <TableCell align="center">
         <ListItemText
-          primary={fToNowDays(row.date_of_order)}
+          primary={fToNowDays(row.dateOfOrder)}
           slotProps={{
             primary: {
               noWrap: true,
@@ -105,20 +105,21 @@ export function OrderTableRow({
         />
       </TableCell>
 
-      <TableCell align="center"> {row.order_items.length} </TableCell>
+      <TableCell align="center"> {row.orderItems.length} </TableCell>
 
       {/* <TableCell> {fCurrency(row.subtotal)} </TableCell> */}
 
       <TableCell>
         <Label
           variant="soft"
+          //@ts-ignore
           color={
-            (row.order_status === 'completed' && 'success') ||
-            (row.order_status === 'pending' && 'warning') ||
+            (row.orderStatus === 'completed' && 'success') ||
+            (row.orderStatus === 'pending' && 'warning') ||
             'default'
           }
         >
-          {ORDER_STATUS_OPTIONS.find((option) => option.value === row.order_status)?.label ||
+          {ORDER_STATUS_OPTIONS.find((option) => option.value === row.orderStatus)?.label ||
             'в процесі'}
         </Label>
         {/* <Label variant="soft" color={'warning'}>
@@ -152,7 +153,7 @@ export function OrderTableRow({
           sx={{ bgcolor: 'background.neutral' }}
         >
           <Paper sx={{ m: 1.5 }}>
-            {row.order_items.map((item) => (
+            {row.orderItems.map((item) => (
               <Box
                 key={item.id}
                 sx={(theme) => ({
@@ -172,7 +173,7 @@ export function OrderTableRow({
                     alignItems: 'center',
                   })}
                 >
-                  {!!item.item_image && (
+                  {!!item.itemImage && (
                     <Avatar
                       // src={item.coverUrl}
                       src={`/assets/images/mock/m-product/product-2.webp`}
@@ -181,8 +182,8 @@ export function OrderTableRow({
                     />
                   )}
                   <ListItemText
-                    primary={item.item_name}
-                    secondary={item.item_model}
+                    primary={item.itemName}
+                    secondary={item.itemModel}
                     slotProps={{
                       primary: {
                         sx: { typography: 'body2' },
@@ -193,7 +194,7 @@ export function OrderTableRow({
                     }}
                   />
                   <ListItemText
-                    primary={item.item_manufacture}
+                    primary={item.itemManufacture}
                     secondary={'Виробництво'}
                     slotProps={{
                       primary: {
@@ -207,10 +208,10 @@ export function OrderTableRow({
                 </Stack>
                 <Stack direction={'row'} spacing={2} sx={{ alignItems: 'center' }}>
                   <Stack direction={'row'} spacing={2}>
-                    {item.item_colors.map((color) => (
+                    {item.itemColors.map((color) => (
                       <ListItemText
                         primary={color.color}
-                        secondary={`Ж.${color.amount_woman}| Ч.${color.amount_man}| Д.${color.amount_kids}`}
+                        secondary={`Ж.${color.amountWoman}| Ч.${color.amountMan}| Д.${color.amountKids}`}
                         slotProps={{
                           primary: {
                             sx: { typography: 'body2' },
@@ -226,11 +227,11 @@ export function OrderTableRow({
                   {/* calculate total amount */}
                   <div>
                     x{' '}
-                    {item.item_colors.reduce(
+                    {item.itemColors.reduce(
                       (acc, color) =>
                         acc +
-                        (color.amount_total ||
-                          color.amount_kids + color.amount_man + color.amount_woman),
+                        (color.amountTotal ||
+                          color.amountKids + color.amountMan + color.amountWoman),
                       0
                     )}{' '}
                   </div>
@@ -263,9 +264,9 @@ export function OrderTableRow({
   //               alignItems: 'center',
   //             }}
   //           >
-  //             {row.order_items.map((item) => (
+  //             {row.orderItems.map((item) => (
   //               <React.Fragment key={item.id}>
-  //                 {!!item.item_image && (
+  //                 {!!item.itemImage && (
   //                   <Avatar
   //                     src={`/assets/images/mock/m-product/product-2.webp`}
   //                     variant="rounded"
@@ -274,8 +275,8 @@ export function OrderTableRow({
   //                 )}
 
   //                 <ListItemText
-  //                   primary={item.item_name}
-  //                   secondary={item.item_model}
+  //                   primary={item.itemName}
+  //                   secondary={item.itemModel}
   //                   slotProps={{
   //                     primary: { sx: { typography: 'body2' } },
   //                     secondary: { sx: { mt: 0.5, color: 'text.disabled' } },
@@ -283,7 +284,7 @@ export function OrderTableRow({
   //                 />
 
   //                 <ListItemText
-  //                   primary={item.item_manufacture}
+  //                   primary={item.itemManufacture}
   //                   secondary={'Виробництво'}
   //                   slotProps={{
   //                     primary: { sx: { typography: 'body2' } },
@@ -292,11 +293,11 @@ export function OrderTableRow({
   //                 />
 
   //                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-  //                   {item.item_colors.map((color, index) => (
+  //                   {item.itemColors.map((color, index) => (
   //                     <ListItemText
   //                       key={index}
   //                       primary={color.color}
-  //                       secondary={`Ж.${color.amount_woman}| Ч.${color.amount_man}| Д.${color.amount_kids}`}
+  //                       secondary={`Ж.${color.amountWoman}| Ч.${color.amountMan}| Д.${color.amountKids}`}
   //                       slotProps={{
   //                         primary: { sx: { typography: 'body2' } },
   //                         secondary: { sx: { mt: 0.5, color: 'text.disabled' } },
@@ -307,11 +308,11 @@ export function OrderTableRow({
 
   //                 <Box sx={{ textAlign: 'right', fontWeight: 'bold' }}>
   //                   x{' '}
-  //                   {item.item_colors.reduce(
+  //                   {item.itemColors.reduce(
   //                     (acc, color) =>
   //                       acc +
-  //                       (color.amount_total ||
-  //                         color.amount_kids + color.amount_man + color.amount_woman),
+  //                       (color.amountTotal ||
+  //                         color.amountKids + color.amountMan + color.amountWoman),
   //                     0
   //                   )}
   //                 </Box>

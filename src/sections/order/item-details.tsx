@@ -1,4 +1,4 @@
-import { OrderProduct } from 'src/data/types';
+import { Order, OrderProduct } from 'src/data/types';
 
 import { Box, Card, Divider, Grid2, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
@@ -21,16 +21,16 @@ const DataRow = ({ fieldName, children }: { fieldName: string; children: React.R
     </>
   );
 };
-export const ItemDetails = ({ item }: { item: OrderProduct }) => {
+export const ItemDetails = ({ item, order }: { item: OrderProduct; order: Order }) => {
   const [currentStep, setCurrentStep] = useState(
-    item.item_step_history.length === 7 && !!item.item_step_history[6]?.date_ended
+    item.itemStepHistory.length === 7 && !!item.itemStepHistory[6]?.dateEnded
       ? 7
-      : item.item_step_history.length - 1
+      : item.itemStepHistory.length - 1
   );
   return (
     <Card sx={{ p: 2, borderBlockEnd: '1px dashed #eeeeee' }}>
       <Stack direction="row" spacing={2}>
-        {!!item.item_image && (
+        {!!item.itemImage && (
           <Box>
             <Image
               src={'/assets/images/mock/m-product/product-2.webp'}
@@ -44,17 +44,17 @@ export const ItemDetails = ({ item }: { item: OrderProduct }) => {
         <Stack direction={'row'} justifyContent={'space-between'} width={'100%'}>
           <Stack direction={'column'} justifyContent={'space-between'}>
             <Box>
-              <Typography>{item.item_name}</Typography>
+              <Typography>{item.itemName}</Typography>
               <Typography variant="body2" color="text.disabled">
-                {item.item_model}
+                {item.itemModel}
               </Typography>
             </Box>
             <Typography variant="body2">
               x{' '}
-              {item.item_colors.reduce(
+              {item.itemColors.reduce(
                 (acc, color) =>
                   acc +
-                  (color.amount_total || color.amount_kids + color.amount_man + color.amount_woman),
+                  (color.amountTotal || color.amountKids + color.amountMan + color.amountWoman),
                 0
               )}{' '}
             </Typography>
@@ -80,14 +80,13 @@ export const ItemDetails = ({ item }: { item: OrderProduct }) => {
             },
           }}
         >
-          <DataRow fieldName="Найменування">{item.item_name} </DataRow>
-          <DataRow fieldName="Модель">{item.item_model}</DataRow>
-          <DataRow fieldName="Виробництво">{item.item_manufacture}</DataRow>
+          <DataRow fieldName="Найменування">{item.itemName} </DataRow>
+          <DataRow fieldName="Модель">{item.itemModel}</DataRow>
+          <DataRow fieldName="Виробництво">{item.itemManufacture}</DataRow>
           <DataRow fieldName="Загальна кількість">
-            {item.item_colors.reduce(
+            {item.itemColors.reduce(
               (acc, color) =>
-                acc +
-                (color.amount_total || color.amount_kids + color.amount_man + color.amount_woman),
+                acc + (color.amountTotal || color.amountKids + color.amountMan + color.amountWoman),
               0
             )}{' '}
           </DataRow>
@@ -96,14 +95,14 @@ export const ItemDetails = ({ item }: { item: OrderProduct }) => {
               variant={'caption'}
               component={'a'}
               sx={{ textDecoration: 'underline' }}
-              href={item.item_order_link}
+              href={item.itemOrderLink}
             >
               посилання
             </Typography>
           </DataRow>
           <DataRow fieldName="Кольори">
             <Stack spacing={2} direction={'row'} flexWrap={'wrap'}>
-              {item.item_colors.map((color, i) => (
+              {item.itemColors.map((color, i) => (
                 //color info view
                 <Box
                   key={i}
@@ -118,9 +117,7 @@ export const ItemDetails = ({ item }: { item: OrderProduct }) => {
                     {color.color}
                     <Typography component={'span'} fontStyle={'bold'} color={'text.disabled'}>
                       {' '}
-                      x
-                      {color.amount_total ||
-                        color.amount_kids + color.amount_man + color.amount_woman}
+                      x{color.amountTotal || color.amountKids + color.amountMan + color.amountWoman}
                     </Typography>
                   </Typography>
                   <Divider />
@@ -132,19 +129,19 @@ export const ItemDetails = ({ item }: { item: OrderProduct }) => {
                     <Stack direction={'column'}>
                       <Typography variant="caption">Чол.</Typography>
                       <Typography variant="caption" textAlign={'center'}>
-                        x{color.amount_man}
+                        x{color.amountMan}
                       </Typography>
                     </Stack>
                     <Stack direction={'column'}>
                       <Typography variant="caption">Дит.</Typography>
                       <Typography variant="caption" textAlign={'center'}>
-                        x{color.amount_kids}
+                        x{color.amountKids}
                       </Typography>
                     </Stack>
                     <Stack direction={'column'}>
                       <Typography variant="caption">Жін.</Typography>
                       <Typography variant="caption" textAlign={'center'}>
-                        x{color.amount_woman}
+                        x{color.amountWoman}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -159,9 +156,10 @@ export const ItemDetails = ({ item }: { item: OrderProduct }) => {
       <Box>
         <Typography fontWeight={'bold'}>Історія</Typography>
         <HistoryDetails
-          history={item.item_step_history}
+          history={item.itemStepHistory}
           itemId={item.id || 0}
           updateCurrentStep={setCurrentStep}
+          order={order}
         />
       </Box>
     </Card>
