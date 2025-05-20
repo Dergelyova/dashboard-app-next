@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { varAlpha } from 'minimal-shared/utils';
 import { useSetState } from 'minimal-shared/hooks';
 import React, { useState, useCallback } from 'react';
@@ -16,14 +15,12 @@ import { fIsBetween } from 'src/utils/format-time';
 
 import { Order } from 'src/data/types';
 import { deleteOrder } from 'src/data/api';
-// import BreadcrumbsCustom from './breadcrumbs';
-// import OrderProductsList from './product';
 import { ORDER_STATUS_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
-import { Scrollbar } from 'src/components/scrollbar';
+import { Scrollbar } from 'src/components/scrollbar/scrollbar';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import {
   useTable,
@@ -72,6 +69,7 @@ export function OrderListView({ orders }: OrdersPageProps) {
     inputData: tableData,
     comparator: getComparator(table.order, table.orderBy),
     filters: currentFilters,
+    dateError: false,
   });
 
   const handleFilterStatus = useCallback(
@@ -81,9 +79,6 @@ export function OrderListView({ orders }: OrdersPageProps) {
     },
     [updateFilters, table]
   );
-  const router = useRouter();
-  const [expandedRow, setExpandedRow] = useState<number | null>(null);
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
   const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
 
@@ -99,9 +94,6 @@ export function OrderListView({ orders }: OrdersPageProps) {
     },
     [dataInPage.length, table, tableData]
   );
-
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
 
   return (
     <Box>
@@ -160,8 +152,8 @@ export function OrderListView({ orders }: OrdersPageProps) {
                   order={table.order}
                   orderBy={table.orderBy}
                   headCells={TABLE_HEAD}
-                  rowCount={dataFiltered.length}
                   onSort={table.onSort}
+                  sx={{}}
                 />
 
                 <TableBody>
@@ -175,7 +167,6 @@ export function OrderListView({ orders }: OrdersPageProps) {
                         key={row.id}
                         row={row}
                         selected={table.selected.includes(row.id)}
-                        // onSelectRow={() => table.onSelectRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
                         detailsHref={paths.dashboard.order.details(row.id)}
                       />
@@ -186,8 +177,6 @@ export function OrderListView({ orders }: OrdersPageProps) {
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                     sx={{}}
                   />
-
-                  {/* <TableNoData notFound={notFound} /> */}
                 </TableBody>
               </Table>
             </Scrollbar>

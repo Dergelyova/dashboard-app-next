@@ -20,33 +20,10 @@ const visuallyHidden = {
 
 // ----------------------------------------------------------------------
 
-export function TableHeadCustom({
-  sx,
-  order,
-  onSort,
-  orderBy,
-  headCells,
-  rowCount = 0,
-  numSelected = 0,
-  onSelectAllRows,
-}) {
+export function TableHeadCustom({ sx, order, onSort, orderBy, headCells }) {
   return (
     <TableHead sx={sx}>
       <TableRow>
-        {onSelectAllRows && (
-          <TableCell padding="checkbox">
-            <Checkbox
-              indeterminate={!!numSelected && numSelected < rowCount}
-              checked={!!rowCount && numSelected === rowCount}
-              onChange={(event) => onSelectAllRows(event.target.checked)}
-              inputProps={{
-                id: `all-row-checkbox`,
-                'aria-label': `All row Checkbox`,
-              }}
-            />
-          </TableCell>
-        )}
-
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}

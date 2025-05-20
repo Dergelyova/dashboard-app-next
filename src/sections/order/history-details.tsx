@@ -1,27 +1,30 @@
 'use client';
-import { updateOrderProductHistory } from 'src/data/api';
-import { STEPS } from 'src/data/mock';
+
 import type { Order, StepHistory } from 'src/data/types';
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-  Step,
-  StepContent,
-  StepLabel,
-  Stepper,
-  TextField,
-  Typography,
-} from '@mui/material';
-import dayjs, { Dayjs } from 'dayjs';
 
 import { useState } from 'react';
-import { formatPatterns } from 'src/utils/format-time';
+import dayjs, { Dayjs } from 'dayjs';
+
 import { DateTimePicker } from '@mui/x-date-pickers';
+import {
+  Box,
+  Step,
+  Stack,
+  Button,
+  Dialog,
+  Stepper,
+  StepLabel,
+  Typography,
+  DialogTitle,
+  StepContent,
+  DialogActions,
+  DialogContent,
+} from '@mui/material';
+
+import { formatPatterns } from 'src/utils/format-time';
+
+import { STEPS } from 'src/data/mock';
+import { updateOrderProductHistory } from 'src/data/api';
 
 // Convert Step History to a Map
 const createHistoryDetailsMap = (historyDetails: StepHistory[]): Map<number, StepHistory> => {
@@ -34,9 +37,8 @@ const createHistoryDetailsMap = (historyDetails: StepHistory[]): Map<number, Ste
 };
 
 //reverse converting step History to a Map
-const revertHistoryDetailsMap = (historyMap: Map<number, StepHistory>): StepHistory[] => {
-  return Array.from(historyMap.values());
-};
+const revertHistoryDetailsMap = (historyMap: Map<number, StepHistory>): StepHistory[] =>
+  Array.from(historyMap.values());
 
 export function getDurationInDaysAndHours(
   startStr?: string,
@@ -135,7 +137,7 @@ export const HistoryDetails = ({
               icon={`${step.id}`}
               optional={
                 step.id <= activeStep ? (
-                  <Stack direction={'column'}>
+                  <Stack direction="column">
                     {/* TODO: fix state update time */}
                     <Typography variant="caption" color="text">
                       Час в етапі:
@@ -159,7 +161,7 @@ export const HistoryDetails = ({
               }
             >
               {step.name}{' '}
-              <Typography component={'span'} variant="caption">
+              <Typography component="span" variant="caption">
                 {' '}
                 {!!step.maxDurationDays &&
                   `
