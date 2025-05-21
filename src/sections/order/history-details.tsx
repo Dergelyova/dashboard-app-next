@@ -2,8 +2,8 @@
 
 import type { Order, StepHistory } from 'src/data/types';
 
+import dayjs from 'dayjs';
 import { useState } from 'react';
-import dayjs, { Dayjs } from 'dayjs';
 
 import { DateTimePicker } from '@mui/x-date-pickers';
 import {
@@ -61,17 +61,19 @@ export const HistoryDetails = ({
   itemId,
   updateCurrentStep,
   order,
+  onHistoryUpdate,
 }: {
   history: StepHistory[];
   itemId: number;
   updateCurrentStep: (step: number) => void;
   order: Order;
+  onHistoryUpdate: () => Promise<void>;
 }) => {
   const [activeStep, setActiveStep] = useState(
     history.length === 7 && !!history[6]?.dateEnded ? 7 : history.length - 1
   );
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [completionDate, setCompletionDate] = useState<Dayjs | string>(
+  const [completionDate, setCompletionDate] = useState<string>(
     dayjs().format(formatPatterns.dateTime)
   );
   const [historyDetailsMap, setHistoryDetailsMap] = useState<Map<number, StepHistory>>(
@@ -86,46 +88,20 @@ export const HistoryDetails = ({
     setDialogOpen(false);
   };
 
-  const handleConfirmFinish = () => {
-    //update finished step
-    const updatedStepInfo = {
-      ...historyDetailsMap.get(activeStep),
-      stepId: activeStep, //for what?
-      dateEnded: completionDate,
-    } as StepHistory;
+  const handleConfirmFinish = async () => {
+    try {
+      await updateOrderProductHistory(completionDate, itemId);
+      await onHistoryUpdate();
 
-    setHistoryDetailsMap((prevMap) => {
-      const newMap = new Map(prevMap);
-      newMap.set(activeStep, updatedStepInfo);
-      const nextStep = activeStep + 1;
-      setActiveStep(nextStep);
+      //reset completion date
+      setCompletionDate(dayjs().format(formatPatterns.dateTime));
 
-      //update started step
-      if (nextStep < STEPS.length) {
-        const updatedStartedStepInfo = {
-          ...prevMap.get(nextStep),
-          stepId: nextStep,
-          dateStarted: completionDate,
-        } as StepHistory;
-
-        newMap.set(nextStep, updatedStartedStepInfo);
-      }
-      updateCurrentStep(nextStep);
-
-      //save new history to db
-      const newHistory = revertHistoryDetailsMap(newMap);
-
-      //here we need to replace
-      updateOrderProductHistory(newHistory, itemId, order);
-
-      return newMap;
-    });
-
-    //reset completion date
-    setCompletionDate(dayjs().format(formatPatterns.dateTime));
-
-    //close dialog
-    setDialogOpen(false);
+      //close dialog
+      setDialogOpen(false);
+    } catch (error) {
+      console.error('Failed to update history:', error);
+      // You might want to show an error message to the user here
+    }
   };
 
   return (
@@ -195,7 +171,7 @@ export const HistoryDetails = ({
             label="Дата завершення"
             value={dayjs(completionDate, formatPatterns.dateTime)}
             format={formatPatterns.dateTime}
-            onChange={(e) => setCompletionDate(e)}
+            onChange={(e) => setCompletionDate(e.format(formatPatterns.dateTime))}
             sx={{ mt: 2 }}
           />
         </DialogContent>

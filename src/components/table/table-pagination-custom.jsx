@@ -1,7 +1,5 @@
 import Box from '@mui/material/Box';
-import Switch from '@mui/material/Switch';
 import TablePagination from '@mui/material/TablePagination';
-import FormControlLabel from '@mui/material/FormControlLabel';
 
 // ----------------------------------------------------------------------
 
@@ -21,7 +19,7 @@ export function TablePaginationCustom({
         sx={{ borderTopColor: 'transparent' }}
       />
 
-      {onChangeDense && (
+      {/* {onChangeDense && (
         <FormControlLabel
           label="Щільно"
           control={
@@ -34,7 +32,7 @@ export function TablePaginationCustom({
             position: { sm: 'absolute' },
           }}
         />
-      )}
+      )} */}
     </Box>
   );
 }

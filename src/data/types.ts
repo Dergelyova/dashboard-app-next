@@ -15,7 +15,7 @@ export interface OrderProduct {
   itemTotalAmount: number;
   itemOrderLink: string;
   itemManufacture: string;
-  itemStepHistory: StepHistory[];
+  itemStepHistory?: StepHistory[];
 }
 
 export interface Order {

@@ -12,23 +12,21 @@ const orderStatusColors: Record<number, string> = {
 
 const orderStatusLabels: Record<number, string> = {
   0: 'Етап 0 | Погодження дизайну',
-  1: 'Етап 1 | Підготовка таблиці замовлення (До 1 дня)',
+  1: 'Етап 1 | Підготовка таблиці замовлення',
   2: 'Етап 2 | Розробка лекал',
-  3: 'Етап 3 | Розкладка (До 3 днів)',
-  4: 'Етап 4 | Друк (До 9 днів)',
-  5: 'Етап 5 | Підготовка до пошиття (До 3 днів)',
-  6: 'Етап 6 | Пошиття (До 14 днів)',
+  3: 'Етап 3 | Розкладка',
+  4: 'Етап 4 | Друк',
+  5: 'Етап 5 | Підготовка до пошиття',
+  6: 'Етап 6 | Пошиття',
   7: 'Виробництво завершено',
 };
 
-export const StepColorChip = ({ stepNumber }: { stepNumber: number }) => {
-  return (
-    <Chip
-      label={orderStatusLabels[stepNumber] || 'Невідомий етап'}
-      sx={{
-        backgroundColor: orderStatusColors[stepNumber] || '#000000',
-        color: '#fff',
-      }}
-    />
-  );
-};
+export const StepColorChip = ({ stepNumber }: { stepNumber: number }) => (
+  <Chip
+    label={orderStatusLabels[stepNumber] || 'Невідомий етап'}
+    sx={{
+      backgroundColor: orderStatusColors[stepNumber] || '#000000',
+      color: '#fff',
+    }}
+  />
+);

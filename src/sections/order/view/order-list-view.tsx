@@ -7,11 +7,11 @@ import React, { useState, useCallback } from 'react';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
+import Switch from '@mui/material/Switch';
 import { Box, Table, TableBody } from '@mui/material';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 import { paths } from 'src/routes/paths';
-
-import { fIsBetween } from 'src/utils/format-time';
 
 import { Order } from 'src/data/types';
 import { deleteOrder } from 'src/data/api';
@@ -20,7 +20,6 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
-import { Scrollbar } from 'src/components/scrollbar/scrollbar';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import {
   useTable,
@@ -38,13 +37,12 @@ import { OrderTableRow } from '../order-table-row';
 const STATUS_OPTIONS = [{ value: 'all', label: 'Всі' }, ...ORDER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-  { id: 'orderNumber', label: 'Номер', width: 88 },
-  { id: 'name', label: 'Клієнт' },
-  { id: 'createdAt', label: 'Дата замовлення' },
-  { id: 'duration', label: 'Днів в роботі', width: 140, align: 'center' },
-  { id: 'totalQuantity', label: 'Кількість найменувань', align: 'center' },
-
-  { id: 'status', label: 'Статус', width: 110 },
+  { id: 'id', label: 'Номер', width: 88 },
+  { id: 'clientName', label: 'Клієнт' },
+  { id: 'dateOfOrder', label: 'Дата замовлення' },
+  { id: 'daysInWork', label: 'Днів в роботі', width: 140, align: 'center' },
+  { id: 'orderItems', label: 'Кількість найменувань', align: 'center' },
+  { id: 'orderStatus', label: 'Статус', width: 110 },
   { id: '', width: 88 },
 ];
 
@@ -55,9 +53,14 @@ interface OrdersPageProps {
 }
 
 export function OrderListView({ orders }: OrdersPageProps) {
-  const table = useTable({ defaultOrderBy: 'orderNumber' });
+  const table = useTable({
+    defaultOrderBy: 'dateOfOrder',
+    defaultOrder: 'desc',
+    defaultDense: true,
+  });
 
   const [tableData, setTableData] = useState(orders);
+  const [expandAll, setExpandAll] = useState(false);
 
   const filters = useSetState({
     name: '',
@@ -146,7 +149,7 @@ export function OrderListView({ orders }: OrdersPageProps) {
           </Tabs>
 
           <Box sx={{ position: 'relative' }}>
-            <Scrollbar sx={{ minHeight: 444 }}>
+            <Box sx={{ overflowX: 'auto' }}>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
                   order={table.order}
@@ -157,20 +160,17 @@ export function OrderListView({ orders }: OrdersPageProps) {
                 />
 
                 <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <OrderTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        detailsHref={paths.dashboard.order.details(row.id)}
-                      />
-                    ))}
+                  {dataInPage.map((row, index) => (
+                    <OrderTableRow
+                      key={row.id}
+                      row={row}
+                      selected={table.selected.includes(row.id)}
+                      isEven={index % 2 === 0}
+                      onDeleteRow={() => handleDeleteRow(row.id)}
+                      detailsHref={paths.dashboard.order.details(row.id)}
+                      expandAll={expandAll}
+                    />
+                  ))}
 
                   <TableEmptyRows
                     height={table.dense ? 56 : 56 + 20}
@@ -179,19 +179,34 @@ export function OrderListView({ orders }: OrdersPageProps) {
                   />
                 </TableBody>
               </Table>
-            </Scrollbar>
+            </Box>
           </Box>
 
-          <TablePaginationCustom
-            page={table.page}
-            dense={table.dense}
-            count={dataFiltered.length}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onChangeDense={table.onChangeDense}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
-            sx={{}}
-          />
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2 }}
+          >
+            <FormControlLabel
+              label="Розгорнути всі"
+              control={
+                <Switch
+                  checked={expandAll}
+                  onChange={(e) => setExpandAll(e.target.checked)}
+                  inputProps={{ id: 'expand-all-switch' }}
+                />
+              }
+            />
+
+            <TablePaginationCustom
+              page={table.page}
+              dense
+              count={dataFiltered.length}
+              rowsPerPage={table.rowsPerPage}
+              onPageChange={table.onChangePage}
+              onChangeDense={() => {}}
+              onRowsPerPageChange={table.onChangeRowsPerPage}
+              sx={{}}
+            />
+          </Box>
         </Card>
       </DashboardContent>
     </Box>
@@ -199,35 +214,27 @@ export function OrderListView({ orders }: OrdersPageProps) {
 }
 
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { status, name, startDate, endDate } = filters;
+  const { status, name } = filters;
 
-  const stabilizedThis = inputData.map((el, index) => [el, index]);
+  // First apply sorting
+  const sortedData = [...inputData].sort(comparator);
 
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-
-  inputData = stabilizedThis.map((el) => el[0]);
+  // Then apply filters
+  let filteredData = sortedData;
 
   if (name) {
-    inputData = inputData.filter(({ orderNumber, customer }) =>
-      [orderNumber, customer.name, customer.email].some((field) =>
-        field?.toLowerCase().includes(name.toLowerCase())
+    filteredData = filteredData.filter((order) =>
+      [order.id, order.clientName, order.clientContactNumber].some((field) =>
+        String(field || '')
+          .toLowerCase()
+          .includes(name.toLowerCase())
       )
     );
   }
 
   if (status !== 'all') {
-    inputData = inputData.filter((order) => order.orderStatus === status);
+    filteredData = filteredData.filter((order) => order.orderStatus === status);
   }
 
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter((order) => fIsBetween(order.createdAt, startDate, endDate));
-    }
-  }
-
-  return inputData;
+  return filteredData;
 }

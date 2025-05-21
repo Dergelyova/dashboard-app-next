@@ -37,7 +37,7 @@ dayjs.extend(customParseFormat);
 
 //('dd.mm.yyyy hh:mm:ss');
 export const formatPatterns = {
-  dateTime: 'DD.MM.YYYY HH:mm:ss', // 17.01.2022 12:00:00
+  dateTime: 'DD.MM.YYYY HH:mm:00', // 17.01.2022 12:00:00
   date: 'DD MMM YYYY', // 17 Apr 2022
   time: 'h:mm a', // 12:00 am
   split: {
@@ -67,12 +67,25 @@ export function today(template) {
 
 // ----------------------------------------------------------------------
 
+/**
+ * Rounds a date to the nearest minute, setting seconds to 00
+ */
+export function roundToMinute(date) {
+  if (!isValidDate(date)) {
+    return 'Invalid date';
+  }
+  return dayjs(date).second(0).millisecond(0).format();
+}
+
+// ----------------------------------------------------------------------
+
 export function fDateTime(date, template) {
   if (!isValidDate(date)) {
     return 'Invalid date';
   }
 
-  return dayjs(date).format(template ?? formatPatterns.dateTime);
+  const roundedDate = roundToMinute(date);
+  return dayjs(roundedDate).format(template ?? formatPatterns.dateTime);
 }
 
 // ----------------------------------------------------------------------
@@ -145,7 +158,7 @@ export function fToNowDays(date) {
   }
 
   const dateUpdated = dayjs(date, formatPatterns.dateTime);
-  return dayjs(dayjs()).diff(dateUpdated, 'day');
+  return dayjs().diff(dateUpdated, 'day');
 }
 // ----------------------------------------------------------------------
 

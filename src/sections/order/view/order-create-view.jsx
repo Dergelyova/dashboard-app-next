@@ -16,7 +16,7 @@ export function OrderCreateView() {
       <CustomBreadcrumbs
         heading="Створити нове замовлення"
         links={[
-          { name: 'Список замовлень', href: paths.dashboard.root },
+          { name: 'Список замовлень', href: paths.dashboard.order.root },
           { name: 'Нове замовлення' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

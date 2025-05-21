@@ -1,39 +1,46 @@
-import { Order, OrderProduct } from 'src/data/types';
-
-import { Box, Card, Divider, Grid2, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
+import React, { useState } from 'react';
+
+import { Box, Card, Grid2, Stack, Divider, Typography } from '@mui/material';
+
+import { Order, StepHistory, OrderProduct } from 'src/data/types';
+
 import { HistoryDetails } from './history-details';
-import { useState } from 'react';
-import { Label } from 'src/components/label';
 import { StepColorChip } from './order-details-item-status-label';
 
-const DataRow = ({ fieldName, children }: { fieldName: string; children: React.ReactNode }) => {
-  return (
-    <>
-      <Grid2 size={4} p={1}>
-        <Typography variant="subtitle2" color="text.disabled">
-          {fieldName}
-        </Typography>
-      </Grid2>
-      <Grid2 size={8} p={1}>
-        {children}
-      </Grid2>
-    </>
-  );
-};
-export const ItemDetails = ({ item, order }: { item: OrderProduct; order: Order }) => {
-  const [currentStep, setCurrentStep] = useState(
-    item.itemStepHistory.length === 7 && !!item.itemStepHistory[6]?.dateEnded
-      ? 7
-      : item.itemStepHistory.length - 1
-  );
+const DataRow = ({ fieldName, children }: { fieldName: string; children: React.ReactNode }) => (
+  <>
+    <Grid2 size={4} p={1}>
+      <Typography variant="subtitle2" color="text.disabled">
+        {fieldName}
+      </Typography>
+    </Grid2>
+    <Grid2 size={8} p={1}>
+      {children}
+    </Grid2>
+  </>
+);
+
+export const getInitialActiveStep = (history: StepHistory[]): number =>
+  history.length === 7 && !!history[6]?.dateEnded ? 7 : history.length - 1;
+
+export const ItemDetails = ({
+  item,
+  order,
+  onHistoryUpdate,
+}: {
+  item: OrderProduct;
+  order: Order;
+  onHistoryUpdate: () => Promise<void>;
+}) => {
+  const [activeStep, setActiveStep] = useState(getInitialActiveStep(item.itemStepHistory));
   return (
     <Card sx={{ p: 2, borderBlockEnd: '1px dashed #eeeeee' }}>
       <Stack direction="row" spacing={2}>
         {!!item.itemImage && (
           <Box>
             <Image
-              src={'/assets/images/mock/m-product/product-2.webp'}
+              src="/assets/images/mock/m-product/product-2.webp"
               alt="t-shirt example"
               width={70}
               style={{ borderRadius: '10px' }}
@@ -41,8 +48,8 @@ export const ItemDetails = ({ item, order }: { item: OrderProduct; order: Order 
             />
           </Box>
         )}
-        <Stack direction={'row'} justifyContent={'space-between'} width={'100%'}>
-          <Stack direction={'column'} justifyContent={'space-between'}>
+        <Stack direction="row" justifyContent="space-between" width="100%">
+          <Stack direction="column" justifyContent="space-between">
             <Box>
               <Typography>{item.itemName}</Typography>
               <Typography variant="body2" color="text.disabled">
@@ -60,7 +67,7 @@ export const ItemDetails = ({ item, order }: { item: OrderProduct; order: Order 
             </Typography>
           </Stack>
 
-          <StepColorChip stepNumber={currentStep} />
+          <StepColorChip stepNumber={activeStep} />
         </Stack>
       </Stack>
       <Box>
@@ -92,8 +99,8 @@ export const ItemDetails = ({ item, order }: { item: OrderProduct; order: Order 
           </DataRow>
           <DataRow fieldName="Посилання на замовлення">
             <Typography
-              variant={'caption'}
-              component={'a'}
+              variant="caption"
+              component="a"
               sx={{ textDecoration: 'underline' }}
               href={item.itemOrderLink}
             >
@@ -101,46 +108,46 @@ export const ItemDetails = ({ item, order }: { item: OrderProduct; order: Order 
             </Typography>
           </DataRow>
           <DataRow fieldName="Кольори">
-            <Stack spacing={2} direction={'row'} flexWrap={'wrap'}>
+            <Stack spacing={2} direction="row" flexWrap="wrap">
               {item.itemColors.map((color, i) => (
                 //color info view
                 <Box
                   key={i}
                   p={1}
-                  border={'0.6px dashed'}
-                  borderColor={'text.disabled'}
-                  borderRadius={'10px'}
-                  display={'inline-flex'}
-                  flexDirection={'column'}
+                  border="0.6px dashed"
+                  borderColor="text.disabled"
+                  borderRadius="10px"
+                  display="inline-flex"
+                  flexDirection="column"
                 >
-                  <Typography alignSelf={'center'} pb={1}>
+                  <Typography alignSelf="center" pb={1}>
                     {color.color}
-                    <Typography component={'span'} fontStyle={'bold'} color={'text.disabled'}>
+                    <Typography component="span" fontStyle="bold" color="text.disabled">
                       {' '}
                       x{color.amountTotal || color.amountKids + color.amountMan + color.amountWoman}
                     </Typography>
                   </Typography>
                   <Divider />
                   <Stack
-                    direction={'row'}
+                    direction="row"
                     spacing={1}
                     divider={<Divider orientation="vertical" flexItem />}
                   >
-                    <Stack direction={'column'}>
+                    <Stack direction="column">
                       <Typography variant="caption">Чол.</Typography>
-                      <Typography variant="caption" textAlign={'center'}>
+                      <Typography variant="caption" textAlign="center">
                         x{color.amountMan}
                       </Typography>
                     </Stack>
-                    <Stack direction={'column'}>
+                    <Stack direction="column">
                       <Typography variant="caption">Дит.</Typography>
-                      <Typography variant="caption" textAlign={'center'}>
+                      <Typography variant="caption" textAlign="center">
                         x{color.amountKids}
                       </Typography>
                     </Stack>
-                    <Stack direction={'column'}>
+                    <Stack direction="column">
                       <Typography variant="caption">Жін.</Typography>
-                      <Typography variant="caption" textAlign={'center'}>
+                      <Typography variant="caption" textAlign="center">
                         x{color.amountWoman}
                       </Typography>
                     </Stack>
@@ -150,16 +157,17 @@ export const ItemDetails = ({ item, order }: { item: OrderProduct; order: Order 
             </Stack>
           </DataRow>
         </Grid2>
-        <Box></Box>
+        <Box />
       </Box>
       <Divider sx={{ mb: 2 }} />
       <Box>
-        <Typography fontWeight={'bold'}>Історія</Typography>
+        <Typography fontWeight="bold">Історія</Typography>
         <HistoryDetails
           history={item.itemStepHistory}
           itemId={item.id || 0}
-          updateCurrentStep={setCurrentStep}
+          updateCurrentStep={setActiveStep}
           order={order}
+          onHistoryUpdate={onHistoryUpdate}
         />
       </Box>
     </Card>

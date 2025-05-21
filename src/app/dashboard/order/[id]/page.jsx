@@ -6,13 +6,15 @@ import { OrderDetailsView } from 'src/sections/order/view';
 
 // export const metadata = { title: `Order details | Dashboard - ${CONFIG.appName}` };
 
+export const revalidate = 0; // Disable caching for this page
+
 export default async function Page({ params }) {
   const { id } = params;
 
   // const currentOrder = _orders.find((order) => order.id === id);
   const currentOrder = await getOrder(id);
 
-  return <OrderDetailsView order={currentOrder} />;
+  return <OrderDetailsView initialOrder={currentOrder} />;
 }
 
 // ----------------------------------------------------------------------

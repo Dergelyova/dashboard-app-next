@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -8,26 +9,34 @@ import Grid from '@mui/material/Grid2';
 
 import { paths } from 'src/routes/paths';
 
+import { Order } from 'src/data/types';
 import { ORDER_STATUS_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 
-import { OrderDetailsItems } from '../order-details-items';
-import { OrderDetailsToolbar } from '../order-details-toolbar';
-import { OrderDetailsHistory } from '../order-details-history';
-import { OrderDetailsCustomer } from '../order-details-customer';
-import { Order } from 'src/data/types';
 import { ItemDetails } from '../item-details';
+import { OrderDetailsToolbar } from '../order-details-toolbar';
+import { OrderDetailsCustomer } from '../order-details-customer';
 
 // ----------------------------------------------------------------------
 interface OrderDetailsViewProps {
-  order: Order;
+  initialOrder: Order;
 }
-export function OrderDetailsView({ order }: OrderDetailsViewProps) {
+
+export function OrderDetailsView({ initialOrder }: OrderDetailsViewProps) {
+  const router = useRouter();
+  const [order, setOrder] = useState(initialOrder);
   const [status, setStatus] = useState(order.orderStatus || 'pending');
 
   const handleChangeStatus = useCallback((newValue) => {
     setStatus(newValue);
   }, []);
+
+  const handleRefetchOrder = useCallback(async () => {
+    if (order.id) {
+      // Refresh the current route to trigger a server-side refetch
+      router.refresh();
+    }
+  }, [order.id, router]);
 
   return (
     <DashboardContent>
@@ -45,7 +54,14 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
           <Box
             sx={{ gap: 3, display: 'flex', flexDirection: { xs: 'column-reverse', md: 'column' } }}
           >
-            {order?.orderItems.map((item) => <ItemDetails item={item} order={order} />)}
+            {order?.orderItems.map((item) => (
+              <ItemDetails
+                key={item.id}
+                item={item}
+                order={order}
+                onHistoryUpdate={handleRefetchOrder}
+              />
+            ))}
           </Box>
         </Grid>
 
@@ -55,7 +71,7 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
               name={order?.clientName}
               contactNumber={order?.clientContactNumber}
               comment={order?.comment}
-              email={'email@email.com'}
+              email="email@email.com"
             />
 
             {/* <Divider sx={{ borderStyle: 'dashed' }} />

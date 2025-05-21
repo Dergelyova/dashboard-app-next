@@ -1,4 +1,4 @@
-import type { OrderItemColor, OrderProduct, OrderStep } from './types';
+import type { OrderStep, OrderProduct, OrderItemColor } from './types';
 
 export const STEPS: OrderStep[] = [
   {
@@ -58,5 +58,4 @@ export const defaultItem: OrderProduct = {
   itemTotalAmount: 0,
   itemOrderLink: '',
   itemManufacture: '',
-  itemStepHistory: [],
 };

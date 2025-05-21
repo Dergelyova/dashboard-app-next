@@ -1,9 +1,12 @@
 'use client';
-import React from 'react';
-import OrderForm from './order-form';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 import { Order } from 'src/data/types';
 import { updateOrder } from 'src/data/api';
-import { useRouter } from 'next/navigation';
+
+import OrderForm from './order-form';
 
 interface EditOrderProps {
   order: Order;
@@ -11,23 +14,24 @@ interface EditOrderProps {
 
 const EditOrder: React.FC<EditOrderProps> = ({ order }) => {
   const router = useRouter();
-  const handleUpdate = (order: Order) => {
-    const newOrder = order;
-    setTimeout(() => {
-      console.log(newOrder);
-      updateOrder(newOrder);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-      alert('Замовлення збережено. Ви будете перенаправлені на сторінку замовлень.');
-
-      setTimeout(() => {
-        router.push('/orders/');
-      }, 2000);
-    }, 1000); // Simulate API delay
+  const handleUpdate = async (order: Order) => {
+    try {
+      setIsSubmitting(true);
+      await updateOrder(order);
+      router.push('/dashboard/order');
+    } catch (error) {
+      console.error('Failed to update order:', error);
+      // You might want to show an error message to the user here
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div>
-      <OrderForm initialData={order} onSubmit={handleUpdate} />
+      <OrderForm initialData={order} onSubmit={handleUpdate} isSubmitting={isSubmitting} />
     </div>
   );
 };

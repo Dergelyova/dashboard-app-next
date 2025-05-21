@@ -1,39 +1,42 @@
+import React from 'react';
 import { useBoolean, usePopover } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import { TableRow } from '@mui/material';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import MenuList from '@mui/material/MenuList';
 import Collapse from '@mui/material/Collapse';
 import MenuItem from '@mui/material/MenuItem';
-import { TableRow } from '@mui/material';
-import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
 
 import { RouterLink } from 'src/routes/components';
 
-import { fCurrency } from 'src/utils/format-number';
-import { fDate, fTime, fToNow, fToNowDays } from 'src/utils/format-time';
+import { fDate, fToNowDays } from 'src/utils/format-time';
+
+import { Order } from 'src/data/types';
+import { ORDER_STATUS_OPTIONS } from 'src/_mock';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover } from 'src/components/custom-popover';
-import { Order } from 'src/data/types';
-import { CONFIG } from 'src/global-config';
-import React from 'react';
-import { ORDER_STATUS_OPTIONS } from 'src/_mock';
+
+import { getInitialActiveStep } from './item-details';
+import { StepColorChip } from './order-details-item-status-label';
 
 // -------------------------------------------------------
 // ---------------
 interface OrderTableRowProps {
   row: Order;
   selected: boolean;
+  isEven: boolean;
+  expandAll: boolean;
   // onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
   detailsHref: string;
@@ -41,7 +44,8 @@ interface OrderTableRowProps {
 export function OrderTableRow({
   row,
   selected,
-
+  isEven,
+  expandAll,
   onDeleteRow,
   detailsHref,
 }: OrderTableRowProps) {
@@ -49,19 +53,27 @@ export function OrderTableRow({
   const menuActions = usePopover();
   const collapseRow = useBoolean();
 
-  const renderPrimaryRow = () => (
-    <TableRow hover selected={selected}>
-      {/* <TableCell padding="checkbox">
-        <Checkbox
-          checked={selected}
-          onClick={onSelectRow}
-          inputProps={{
-            id: `${row.id}-checkbox`,
-            'aria-label': `${row.id} checkbox`,
-          }}
-        />
-      </TableCell> */}
+  // Update collapse state when expandAll changes
+  React.useEffect(() => {
+    collapseRow.setValue(expandAll);
+  }, [expandAll]);
 
+  const handleToggle = () => {
+    collapseRow.setValue(!collapseRow.value);
+  };
+
+  const renderPrimaryRow = () => (
+    <TableRow
+      hover
+      selected={selected}
+      sx={{
+        borderBottom: '1px dashed',
+        borderColor: 'text.secondary',
+        ...(collapseRow.value && {
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        }),
+      }}
+    >
       <TableCell>
         <Link component={RouterLink} href={detailsHref} color="inherit" underline="always">
           #{row.id}
@@ -107,8 +119,6 @@ export function OrderTableRow({
 
       <TableCell align="center"> {row.orderItems.length} </TableCell>
 
-      {/* <TableCell> {fCurrency(row.subtotal)} </TableCell> */}
-
       <TableCell>
         <Label
           variant="soft"
@@ -130,7 +140,7 @@ export function OrderTableRow({
       <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
         <IconButton
           color={collapseRow.value ? 'inherit' : 'default'}
-          onClick={collapseRow.onToggle}
+          onClick={handleToggle}
           sx={{ ...(collapseRow.value && { bgcolor: 'action.hover' }) }}
         >
           <Iconify icon="eva:arrow-ios-downward-fill" />
@@ -144,13 +154,13 @@ export function OrderTableRow({
   );
 
   const renderSecondaryRow = () => (
-    <TableRow>
+    <TableRow sx={{ bgcolor: 'background.neutral' }}>
       <TableCell sx={{ p: 0, border: 'none' }} colSpan={8}>
         <Collapse
           in={collapseRow.value}
           timeout="auto"
           unmountOnExit
-          sx={{ bgcolor: 'background.neutral' }}
+          sx={{ bgcolor: 'transparent' }}
         >
           <Paper sx={{ m: 1.5 }}>
             {row.orderItems.map((item) => (
@@ -167,7 +177,7 @@ export function OrderTableRow({
                 })}
               >
                 <Stack
-                  direction={'row'}
+                  direction="row"
                   spacing={4}
                   sx={(theme) => ({
                     alignItems: 'center',
@@ -176,7 +186,7 @@ export function OrderTableRow({
                   {!!item.itemImage && (
                     <Avatar
                       // src={item.coverUrl}
-                      src={`/assets/images/mock/m-product/product-2.webp`}
+                      src="/assets/images/mock/m-product/product-2.webp"
                       variant="rounded"
                       sx={{ width: 48, height: 48, mr: 2 }}
                     />
@@ -195,7 +205,7 @@ export function OrderTableRow({
                   />
                   <ListItemText
                     primary={item.itemManufacture}
-                    secondary={'Виробництво'}
+                    secondary="Виробництво"
                     slotProps={{
                       primary: {
                         sx: { typography: 'body2' },
@@ -206,24 +216,10 @@ export function OrderTableRow({
                     }}
                   />
                 </Stack>
-                <Stack direction={'row'} spacing={2} sx={{ alignItems: 'center' }}>
-                  <Stack direction={'row'} spacing={2}>
-                    {item.itemColors.map((color) => (
-                      <ListItemText
-                        primary={color.color}
-                        secondary={`Ж.${color.amountWoman}| Ч.${color.amountMan}| Д.${color.amountKids}`}
-                        slotProps={{
-                          primary: {
-                            sx: { typography: 'body2' },
-                          },
-                          secondary: {
-                            sx: { mt: 0.5, color: 'text.disabled' },
-                          },
-                        }}
-                      />
-                    ))}
-                  </Stack>
-
+                <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+                  <StepColorChip stepNumber={getInitialActiveStep(item.itemStepHistory)} />
+                </Stack>
+                <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
                   {/* calculate total amount */}
                   <div>
                     x{' '}
@@ -236,8 +232,6 @@ export function OrderTableRow({
                     )}{' '}
                   </div>
                 </Stack>
-
-                {/* <Box sx={{ width: 110, textAlign: 'right' }}>{fCurrency(item.price)}</Box> */}
               </Box>
             ))}
           </Paper>
@@ -333,6 +327,12 @@ export function OrderTableRow({
       slotProps={{ arrow: { placement: 'right-top' } }}
     >
       <MenuList>
+        <li>
+          <MenuItem component={RouterLink} href={detailsHref} onClick={() => menuActions.onClose()}>
+            <Iconify icon="solar:eye-bold" />
+            Перегляд
+          </MenuItem>
+        </li>
         <MenuItem
           onClick={() => {
             confirmDialog.onTrue();
@@ -343,13 +343,6 @@ export function OrderTableRow({
           <Iconify icon="solar:trash-bin-trash-bold" />
           Видалити
         </MenuItem>
-
-        <li>
-          <MenuItem component={RouterLink} href={detailsHref} onClick={() => menuActions.onClose()}>
-            <Iconify icon="solar:eye-bold" />
-            Перегляд
-          </MenuItem>
-        </li>
       </MenuList>
     </CustomPopover>
   );

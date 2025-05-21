@@ -4,7 +4,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 
-import { formatPatterns } from 'src/utils/format-time';
+import { roundToMinute, formatPatterns } from 'src/utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ export function RHFMobileDateTimePicker({ name, slotProps, ...other }) {
         <MobileDateTimePicker
           {...field}
           value={dayjs(field.value)}
-          onChange={(newValue) => field.onChange(dayjs(newValue).format())}
+          onChange={(newValue) => field.onChange(roundToMinute(newValue))}
           format={formatPatterns.split.dateTime}
           slotProps={{
             textField: {
