@@ -5,132 +5,82 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
 import { RouterLink } from 'src/routes/components';
 
-import { fDate } from 'src/utils/format-time';
-
-import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { CustomPopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
 export function OrderDetailsToolbar({
+  id,
   status,
   backHref,
   createdAt,
   orderNumber,
   statusOptions,
   onChangeStatus,
+  isRefreshing,
 }) {
-  const menuActions = usePopover();
-
-  const renderMenuActions = () => (
-    <CustomPopover
-      open={menuActions.open}
-      anchorEl={menuActions.anchorEl}
-      onClose={menuActions.onClose}
-      slotProps={{ arrow: { placement: 'top-right' } }}
-    >
-      <MenuList>
-        {statusOptions.map((option) => (
-          <MenuItem
-            key={option.value}
-            selected={option.value === status}
-            onClick={() => {
-              menuActions.onClose();
-              onChangeStatus(option.value);
-            }}
-          >
-            {option.label}
-          </MenuItem>
-        ))}
-      </MenuList>
-    </CustomPopover>
-  );
+  const popover = usePopover();
 
   return (
-    <>
-      <Box
-        sx={{
-          gap: 3,
-          display: 'flex',
-          mb: { xs: 3, md: 5 },
-          flexDirection: { xs: 'column', md: 'row' },
-        }}
-      >
-        <Box sx={{ gap: 1, display: 'flex', alignItems: 'flex-start' }}>
-          <IconButton component={RouterLink} href={backHref}>
-            <Iconify icon="eva:arrow-ios-back-fill" />
-          </IconButton>
-
-          <Stack spacing={0.5}>
-            <Box sx={{ gap: 1, display: 'flex', alignItems: 'center' }}>
-              <Typography variant="h4"> Замовлення #{orderNumber} </Typography>
-              <Label
-                variant="soft"
-                color={
-                  (status === 'completed' && 'success') ||
-                  (status === 'pending' && 'warning') ||
-                  (status === 'cancelled' && 'error') ||
-                  'default'
-                }
-              >
-                {statusOptions.find((option) => option.value === status)?.label || 'в процесі'}
-              </Label>
-            </Box>
-
-            <Typography variant="body2" sx={{ color: 'text.disabled' }}>
-              {fDate(createdAt)}
-            </Typography>
-          </Stack>
-        </Box>
-
-        <Box
-          sx={{
-            gap: 1.5,
-            flexGrow: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-          }}
+    <Box
+      sx={{
+        mb: { xs: 3, md: 5 },
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
+    >
+      <Stack spacing={1} direction="row" alignItems="center">
+        <Button
+          component={RouterLink}
+          href={backHref}
+          startIcon={<Iconify icon="eva:arrow-ios-back-fill" />}
         >
-          {/* <Button
-            color="inherit"
-            variant="outlined"
-            endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
-            onClick={menuActions.onOpen}
-            sx={{ textTransform: 'capitalize' }}
-          >
-            {status}
-          </Button> */}
+          Back
+        </Button>
 
-          {/* <Button
-            color="inherit"
-            variant="outlined"
-            startIcon={<Iconify icon="solar:printer-minimalistic-bold" />}
-          >
-            Print
-          </Button> */}
+        <Typography variant="h4">
+          {isRefreshing ? 'Refreshing...' : `Order #${orderNumber}`}
+        </Typography>
+      </Stack>
 
-          {status !== 'completed' && (
-            <Button
-              component={RouterLink}
-              color="inherit"
-              variant="contained"
-              startIcon={<Iconify icon="solar:pen-bold" />}
-              href="edit"
-            >
-              Редагувати
-            </Button>
-          )}
-        </Box>
-      </Box>
+      <Stack direction="row" spacing={2}>
+        <Button
+          color="inherit"
+          variant="outlined"
+          startIcon={<Iconify icon="eva:edit-2-fill" />}
+          onClick={popover.onOpen}
+        >
+          Edit Status
+        </Button>
 
-      {renderMenuActions()}
-    </>
+        <CustomPopover
+          open={popover.open}
+          onClose={popover.onClose}
+          arrow="right-top"
+          sx={{ width: 140 }}
+        >
+          <MenuList>
+            {statusOptions.map((option) => (
+              <MenuItem
+                key={option.value}
+                selected={option.value === status}
+                onClick={() => {
+                  onChangeStatus(option.value);
+                  popover.onClose();
+                }}
+              >
+                {option.label}
+              </MenuItem>
+            ))}
+          </MenuList>
+        </CustomPopover>
+      </Stack>
+    </Box>
   );
 }

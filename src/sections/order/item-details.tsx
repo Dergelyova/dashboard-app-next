@@ -1,5 +1,7 @@
+'use client';
+
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import { Box, Card, Grid2, Stack, Divider, Typography } from '@mui/material';
 
@@ -21,19 +23,43 @@ const DataRow = ({ fieldName, children }: { fieldName: string; children: React.R
   </>
 );
 
-export const getInitialActiveStep = (history: StepHistory[]): number =>
-  history.length === 7 && !!history[6]?.dateEnded ? 7 : history.length - 1;
+export const getInitialActiveStep = (history: StepHistory[]): number => {
+  if (!history) return 1;
 
-export const ItemDetails = ({
-  item,
-  order,
-  onHistoryUpdate,
-}: {
+  // Find the last completed step
+  const lastCompletedStep = history.find((h) => h.stepId === 6 && h.dateEnded);
+  if (lastCompletedStep) return 7;
+
+  // Find the current step (last step without dateEnded)
+  const currentStep = history.reduce(
+    (max, h) => (!h.dateEnded && h.stepId > max ? h.stepId : max),
+    0
+  );
+
+  return currentStep || 1;
+};
+
+interface ItemDetailsProps {
   item: OrderProduct;
   order: Order;
   onHistoryUpdate: () => Promise<void>;
-}) => {
+}
+
+export const ItemDetails = ({ item, order, onHistoryUpdate }: ItemDetailsProps) => {
   const [activeStep, setActiveStep] = useState(getInitialActiveStep(item.itemStepHistory));
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleHistoryUpdate = useCallback(async () => {
+    try {
+      setIsUpdating(true);
+      await onHistoryUpdate();
+    } catch (error) {
+      console.error('Failed to update history:', error);
+    } finally {
+      setIsUpdating(false);
+    }
+  }, [onHistoryUpdate]);
+
   return (
     <Card sx={{ p: 2, borderBlockEnd: '1px dashed #eeeeee' }}>
       <Stack direction="row" spacing={2}>
@@ -167,7 +193,7 @@ export const ItemDetails = ({
           itemId={item.id || 0}
           updateCurrentStep={setActiveStep}
           order={order}
-          onHistoryUpdate={onHistoryUpdate}
+          onHistoryUpdate={handleHistoryUpdate}
         />
       </Box>
     </Card>

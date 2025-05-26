@@ -69,9 +69,22 @@ export const HistoryDetails = ({
   order: Order;
   onHistoryUpdate: () => Promise<void>;
 }) => {
-  const [activeStep, setActiveStep] = useState(
-    history.length === 7 && !!history[6]?.dateEnded ? 7 : history.length - 1
-  );
+  const [activeStep, setActiveStep] = useState(() => {
+    if (!history) return 1;
+
+    // Find the last completed step
+    const lastCompletedStep = history.find((h) => h.stepId === 6 && h.dateEnded);
+    if (lastCompletedStep) return 7;
+
+    // Find the current step (last step without dateEnded)
+    const currentStep = history.reduce(
+      (max, h) => (!h.dateEnded && h.stepId > max ? h.stepId : max),
+      0
+    );
+
+    return currentStep || 1;
+  });
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [completionDate, setCompletionDate] = useState<string>(
     dayjs().format(formatPatterns.dateTime)
@@ -121,7 +134,7 @@ export const HistoryDetails = ({
                         historyDetailsMap.get(step.id)?.dateStarted,
                         historyDetailsMap.get(step.id)?.dateEnded,
                         formatPatterns.dateTime
-                      )}`}
+                      )}`}{' '}
                     </Typography>
                     {step.id !== activeStep && (
                       <Typography variant="caption">

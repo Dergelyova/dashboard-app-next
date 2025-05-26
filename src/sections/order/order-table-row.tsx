@@ -1,4 +1,5 @@
 import React from 'react';
+import dayjs from 'dayjs';
 import { useBoolean, usePopover } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
@@ -17,7 +18,7 @@ import ListItemText from '@mui/material/ListItemText';
 
 import { RouterLink } from 'src/routes/components';
 
-import { fDate, fToNowDays } from 'src/utils/format-time';
+import { fDate, fToNowDays, formatPatterns } from 'src/utils/format-time';
 
 import { Order } from 'src/data/types';
 import { ORDER_STATUS_OPTIONS } from 'src/_mock';
@@ -32,6 +33,23 @@ import { StepColorChip } from './order-details-item-status-label';
 
 // -------------------------------------------------------
 // ---------------
+const calculateOrderTime = (orderItems: Order['orderItems']): string | false => {
+  for (const item of orderItems) {
+    const history = item.itemStepHistory || [];
+    const lastCompletedStep = history.find((h) => h.stepId === 6 && h.dateEnded);
+    if (lastCompletedStep) {
+      const initialStep = history.find((h) => h.stepId === 0);
+      if (initialStep) {
+        const startDate = dayjs(initialStep.dateStarted, formatPatterns.dateTime);
+        const endDate = dayjs(lastCompletedStep.dateEnded, formatPatterns.dateTime);
+        const diffDays = endDate.diff(startDate, 'day');
+        return `${diffDays} дн.`;
+      }
+    }
+  }
+  return false;
+};
+
 interface OrderTableRowProps {
   row: Order;
   selected: boolean;
@@ -107,7 +125,7 @@ export function OrderTableRow({
       </TableCell>
       <TableCell align="center">
         <ListItemText
-          primary={fToNowDays(row.dateOfOrder)}
+          primary={calculateOrderTime(row.orderItems) || fToNowDays(row.dateOfOrder)}
           slotProps={{
             primary: {
               noWrap: true,
