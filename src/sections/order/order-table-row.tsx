@@ -43,7 +43,7 @@ const calculateOrderTime = (orderItems: Order['orderItems']): string | false => 
         const startDate = dayjs(initialStep.dateStarted, formatPatterns.dateTime);
         const endDate = dayjs(lastCompletedStep.dateEnded, formatPatterns.dateTime);
         const diffDays = endDate.diff(startDate, 'day');
-        return `${diffDays} дн.`;
+        return `${diffDays}`;
       }
     }
   }
